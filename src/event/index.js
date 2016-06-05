@@ -12,10 +12,10 @@ module.exports = function Event() {
 	// Returns an id that can be used to stop listening for the event
 	this.on = function(eventName, cb) {
 		if(!eventName || typeof eventName !== 'string') {
-			throw new Error('Dispatcher.on requires a string eventName');
+			throw new Error('Event.on requires a string eventName');
 		}
 		if(!isFunction(cb)) {
-			throw new Error('Dispatcher.on requires a function callback');
+			throw new Error('Event.on requires a function callback');
 		}
 		if(!listeners.hasOwnProperty(eventName)) {
 			listeners[eventName] = [];
@@ -36,7 +36,7 @@ module.exports = function Event() {
 		}
 		else if(typeof arguments[0] === 'string') {
 			if(isFunction(arguments[1])) {
-				if(listenerArray.hasOwnProperty(arguments[0])) {
+				if(listeners.hasOwnProperty(arguments[0])) {
 					listeners[arguments[0]] = listeners[arguments[0]].filter(listener => {
 						return listener.cb !== arguments[1];
 					});
@@ -52,6 +52,9 @@ module.exports = function Event() {
 	};
 
 	this.trigger = function(eventName, data) {
+		if(!eventName || typeof eventName !== 'string') {
+			throw new Error('Event.trigger requires a string eventName');
+		}
 		if(listeners.hasOwnProperty(eventName)) {
 			listeners[eventName].forEach(listener => {
 				listener.cb(data);
