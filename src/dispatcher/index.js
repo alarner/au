@@ -8,6 +8,19 @@ module.exports = function Dispatcher() {
 	let eventHandler = new Event();
 
 	this.on = function(storeDescriptor, eventName, dependencies, promiseFunctions) {
+		if(typeof storeDescriptor !== 'string') {
+			throw new Error('First argument storeDescriptor must be a string');
+		}
+		if(typeof eventName !== 'string') {
+			throw new Error('Second argument eventName must be a string');
+		}
+		if(Object.prototype.toString.call(promiseFunctions) !== '[object Array]') {
+			throw new Error('Fourth argument promiseFunctions must be an array');
+		}
+		if(!promiseFunctions.length) {
+			throw new Error('Fourth argument promiseFunctions must have at least one element');
+		}
+		dependencies = dependencies || [];
 		if(!storeEventHandlers.hasOwnProperty(eventName)) {
 			storeEventHandlers[eventName] = {};
 		}
@@ -26,6 +39,7 @@ module.exports = function Dispatcher() {
 
 	this.handleAllEvents = function(eventName) {
 		return (data) => {
+			console.log('handleAllEvents');
 			if(!storeEventHandlers.hasOwnProperty(eventName)) {
 				return;
 			}
@@ -40,7 +54,7 @@ module.exports = function Dispatcher() {
 			}
 
 			// Todo: should we call .then or .catch here?
-			auto(autoObj);
+			return auto(autoObj);
 
 		};
 	};
@@ -57,4 +71,6 @@ module.exports = function Dispatcher() {
 			promise.then(resolve).catch(reject);
 		};
 	};
+
+	this.trigger = eventHandler.trigger;
 };

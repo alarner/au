@@ -1,5 +1,3 @@
-// Todo: test this
-
 function isFunction(functionToCheck) {
 	var getType = {};
 	return functionToCheck && getType.toString.call(functionToCheck) === '[object Function]';
@@ -56,9 +54,8 @@ module.exports = function Event() {
 			throw new Error('Event.trigger requires a string eventName');
 		}
 		if(listeners.hasOwnProperty(eventName)) {
-			listeners[eventName].forEach(listener => {
-				listener.cb(data);
-			});
+			return Promise.all(listeners[eventName]);
 		}
+		return Promise.resolve();
 	};
 };

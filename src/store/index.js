@@ -17,21 +17,26 @@ module.exports = function(storeDescriptor, dispatcher) {
 			);
 		}
 
-		this.listen = function(componentName, cb) {
+		this.connectToState = function(componentName, setState, key) {
+			this.on(componentName, () => {
+				let newState = {};
+				newState[key || storeDescriptor] = this.get();
+				setState(newState);
+			});
+		};
+
+		this.on = function(componentName, cb) {
 			if(!componentEvents.hasOwnProperty(componentName)) {
 				componentEvents[componentName] = eventHandler.on('CHANGE', cb);
 			}
 			else {
-				console.warn(`${componentName} is already listening to this store`);
+				console.warn(`on: ${componentName} is already listening to this store`);
 			}
 		};
 
-		this.ignore = function(componentName) {
+		this.off = function(componentName) {
 			if(componentEvents.hasOwnProperty(componentName)) {
 				eventHandler.off(componentEvents[componentName]);
-			}
-			else {
-				console.warn(`${componentName} is not listening to this store`);
 			}
 		};
 
