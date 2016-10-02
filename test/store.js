@@ -31,10 +31,6 @@ describe('Store', function() {
 
     const ts = new TestStore();
 
-    it('should have a change method', function() {
-        expect(ts.ignore).to.be.a('function');
-    });
-
     describe('listen', function() {
         it('should exist', function() {
             expect(ts.listen).to.be.a('function');
