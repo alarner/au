@@ -47,7 +47,7 @@ module.exports = function(promiseWrappers, options) {
 				}
 				if(runnable) {
 					count.running++;
-					new Promise(pw[key].promise)
+					new Promise(pw[key].run)
 					.then(then(key))
 					.catch(error(key));
 

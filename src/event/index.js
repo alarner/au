@@ -1,7 +1,4 @@
-function isFunction(functionToCheck) {
-	const getType = {};
-	return functionToCheck && getType.toString.call(functionToCheck) === '[object Function]';
-}
+const isFunction = require('../is-function');
 
 module.exports = function Event() {
 	const listeners = {};

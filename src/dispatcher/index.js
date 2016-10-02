@@ -1,22 +1,20 @@
-let Event = require('../event/index');
-let auto = require('../promise.auto');
+const Event = require('../event/index');
+const auto = require('../promise.auto');
+const isFunction = require('../is-function');
 
 module.exports = function Dispatcher() {
 	let storeEventHandlers = {};
 	let eventHandler = new Event();
 
-	this.on = function(storeDescriptor, eventName, dependencies, promiseFunctions) {
+	this.on = function(storeDescriptor, eventName, dependencies, run) {
 		if(typeof storeDescriptor !== 'string') {
 			throw new Error('First argument storeDescriptor must be a string');
 		}
 		if(typeof eventName !== 'string') {
 			throw new Error('Second argument eventName must be a string');
 		}
-		if(Object.prototype.toString.call(promiseFunctions) !== '[object Array]') {
-			throw new Error('Fourth argument promiseFunctions must be an array');
-		}
-		if(!promiseFunctions.length) {
-			throw new Error('Fourth argument promiseFunctions must have at least one element');
+		if(!isFunction(run)) {
+			throw new Error('Fourth argument run must be a function');
 		}
 		dependencies = dependencies || [];
 		if(!storeEventHandlers.hasOwnProperty(eventName)) {
@@ -27,7 +25,7 @@ module.exports = function Dispatcher() {
 		}
 		storeEventHandlers[eventName][storeDescriptor] = {
 			dependencies,
-			promiseFunctions
+			run
 		};
 
 		eventHandler.off(eventName);
@@ -45,7 +43,7 @@ module.exports = function Dispatcher() {
 				const store = handlersByStore[storeDescriptor];
 				autoObj[storeDescriptor] = {
 					dependencies: store.dependencies || [],
-					promise: this.handleStoreEvents(store.promiseFunctions, data)
+					run: this.handleStoreEvents(store.run, data)
 				};
 			}
 
@@ -54,22 +52,11 @@ module.exports = function Dispatcher() {
 		};
 	};
 
-	this.handleStoreEvents = function(promiseFunctions, data) {
+	this.handleStoreEvents = function(run, data) {
 		return function(resolve, reject) {
-			if(!promiseFunctions.length) {
-				return;
-			}
-			let promise = new Promise((resolve, reject) => {
-				promiseFunctions[0](resolve, reject, data);
-			});
-			for(let i=1; i<promiseFunctions.length; i++) {
-				promise = promise.then(() => {
-					return new Promise((resolve, reject) => {
-						promiseFunctions[i](resolve, reject, data);
-					});
-				});
-			}
-			return promise.then(resolve).catch(reject);
+			return new Promise((resolve, reject) => {
+				run(resolve, reject, data);
+			}).then(resolve).catch(reject);
 		};
 	};
 

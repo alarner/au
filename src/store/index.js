@@ -1,8 +1,8 @@
 const Event = require('../event/index');
 module.exports = function(storeDescriptor, dispatcher) {
-	return function Store() {
+	return function Store(events) {
 		// listen for events on the dispatcher
-		this.events = this.events || {};
+		this.events = events || {};
 		const componentEvents = {};
 		const eventHandler = new Event();
 
@@ -11,7 +11,7 @@ module.exports = function(storeDescriptor, dispatcher) {
 				storeDescriptor,
 				eventName,
 				this.events[eventName].dependencies || [],
-				this.events[eventName].run
+				this.events[eventName].run.bind(this)
 			);
 		}
 

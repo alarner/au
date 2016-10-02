@@ -1,2 +1,2 @@
-const Dispatcher = require('au').Dispatcher;
+const Dispatcher = require('../../src/index').Dispatcher;
 module.exports = new Dispatcher();

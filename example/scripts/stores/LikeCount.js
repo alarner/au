@@ -1,26 +1,26 @@
-const Store = require('au').Store;
+const storeBuilder = require('../../../src/index').storeBuilder;
 const d = require('../dispatcher');
+const Store = storeBuilder('likeCount', d);
 
-function LikeCount(initialValue) {
-    let count = initialValue;
-
-    this.get = function() {
-        return count;
-    };
-
-    this.events = {
-        click: {
-            // other stores that should process the click event before this one
-            dependencies: [],
-            // the function that should run when the click happens
-            run(resolve, reject) {
-                count++;
-                this.change('click');
+class LikeCount extends Store {
+    constructor(initialValue) {
+        super({
+            click: {
+                // other stores that should process the click event before this one
+                dependencies: [],
+                // the function that should run when the click happens
+                run(resolve, reject, data) {
+                    this.count++;
+                    this.change('click');
+                }
             }
-        }
-    };
-};
+        });
+        this.count = initialValue || 0;
+    }
 
-LikeCount.prototype = new Store('LikeCount', d);
+    get() {
+        return this.count;
+    }
+}
 
 module.exports = new LikeCount(0);
