@@ -18,23 +18,29 @@ module.exports = function(storeDescriptor, dispatcher) {
 		}
 
 		this.connectToState = function(componentName, setState, key) {
-			this.on(componentName, () => {
-				let newState = {};
+			this.listen(componentName, (resolve, reject) => {
+				const newState = {};
 				newState[key || storeDescriptor] = this.get();
 				setState(newState);
+				resolve();
 			});
+
+			return this.get();
 		};
 
-		this.on = function(componentName, cb) {
+		this.listen = function(componentName, cb) {
 			if(!componentEvents.hasOwnProperty(componentName)) {
 				componentEvents[componentName] = eventHandler.on('CHANGE', cb);
 			}
 			else {
-				console.warn(`on: ${componentName} is already listening to this store`);
+				throw new Error(
+					`"${componentName}" component is already listening to the store ` +
+					`"${storeDescriptor}"`
+				);
 			}
 		};
 
-		this.off = function(componentName) {
+		this.ignore = function(componentName) {
 			if(componentEvents.hasOwnProperty(componentName)) {
 				eventHandler.off(componentEvents[componentName]);
 			}
@@ -42,7 +48,7 @@ module.exports = function(storeDescriptor, dispatcher) {
 
 		// trigger a change event on the store
 		this.change = function(eventName) {
-			eventHandler.trigger('CHANGE', {event: eventName});
+			return eventHandler.trigger('CHANGE', {event: eventName});
 		};
 	};
 };

@@ -1,6 +1,5 @@
 let expect = require('chai').expect;
 let Dispatcher = require('../src/dispatcher/index');
-let sinon = require('sinon');
 
 describe('Dispatcher', function() {
 	it('should exist', function() {
