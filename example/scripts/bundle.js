@@ -241,8 +241,6 @@ var LikeCount = function (_Store) {
     function LikeCount(initialValue) {
         _classCallCheck(this, LikeCount);
 
-        console.log('LikeCount constructor');
-
         var _this = _possibleConstructorReturn(this, (LikeCount.__proto__ || Object.getPrototypeOf(LikeCount)).call(this, {
             click: {
                 // other stores that should process the click event before this one
@@ -255,7 +253,6 @@ var LikeCount = function (_Store) {
             }
         }));
 
-        console.log('initialValue', initialValue);
         _this.count = initialValue || 0;
         return _this;
     }
@@ -270,7 +267,7 @@ var LikeCount = function (_Store) {
     return LikeCount;
 }(Store);
 
-module.exports = new LikeCount(3);
+module.exports = new LikeCount(0);
 
 },{"../../../src/index":179,"../dispatcher":3}],6:[function(require,module,exports){
 (function (process){
