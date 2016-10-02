@@ -1,5 +1,3 @@
-// Todo: test this
-
 let Event = require('../event/index');
 let auto = require('../promise.auto');
 

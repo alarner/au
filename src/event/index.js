@@ -1,10 +1,10 @@
 function isFunction(functionToCheck) {
-	var getType = {};
+	const getType = {};
 	return functionToCheck && getType.toString.call(functionToCheck) === '[object Function]';
 }
 
 module.exports = function Event() {
-	let listeners = {};
+	const listeners = {};
 	let count = 0;
 
 	// Returns an id that can be used to stop listening for the event
@@ -19,14 +19,14 @@ module.exports = function Event() {
 			listeners[eventName] = [];
 		}
 
-		let id = count++;
+		const id = count++;
 		listeners[eventName].push({ eventName, cb, id });
 		return id;
 	};
 
 	this.off = function() {
 		if(typeof arguments[0] === 'number') {
-			for(let i in listeners) {
+			for(const i in listeners) {
 				listeners[i] = listeners[i].filter(listener => {
 					return listener.id !== arguments[0];
 				});

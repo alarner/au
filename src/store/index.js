@@ -1,12 +1,10 @@
-// Todo: test this
-
-let Event = require('../event/index');
+const Event = require('../event/index');
 module.exports = function(storeDescriptor, dispatcher) {
 	return function Store() {
 		// listen for events on the dispatcher
 		this.events = this.events || {};
-		let componentEvents = {};
-		let eventHandler = new Event();
+		const componentEvents = {};
+		const eventHandler = new Event();
 
 		for(const eventName in this.events) {
 			dispatcher.on(
