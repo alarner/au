@@ -54,7 +54,11 @@ module.exports = function Event() {
 			throw new Error('Event.trigger requires a string eventName');
 		}
 		if(listeners.hasOwnProperty(eventName)) {
-			return Promise.all(listeners[eventName]);
+			return Promise.all(listeners[eventName].map((listenerInfo) => {
+				return new Promise((resolve, reject) => {
+					listenerInfo.cb(resolve, reject, data);
+				});
+			}));
 		}
 		return Promise.resolve();
 	};

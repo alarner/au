@@ -1,6 +1,3 @@
-// Todo: test this and require published node module
-// that you started in projects/promise.auto
-
 module.exports = function(promiseWrappers, options) {
 	let pw = Object.assign({}, promiseWrappers);
 	options = Object.assign({

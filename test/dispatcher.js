@@ -33,30 +33,68 @@ describe('Dispatcher', function() {
 		it('should work with valid arguments', function() {
 			expect(() => { d.on('user_store', 'evt_name', null, [() => {}]); }).not.to.throw();
 		});
-		it('should remove old references if called more than once with the same storeDescriptor and eventName', function(done) {
+		it('should remove old references if called more than once with the same storeDescriptor and eventName', function*() {
 			const d = new Dispatcher();
-			const cb1 = sinon.spy();
-			const cb2 = sinon.spy();
-			const cb3 = sinon.spy();
+			let call1 = false;
+			let call2 = false;
+			let call3 = false;
+			const cb1 = (resolve, reject, data) => {
+				call1 = true;
+				resolve();
+			};
+			const cb2 = (resolve, reject, data) => {
+				call2 = true;
+				resolve();
+			};
+			const cb3 = (resolve, reject, data) => {
+				call3 = true;
+				resolve();
+			};
 			d.on('user_store', 'evt_name', null, [cb1]);
 			d.on('user_store', 'evt_name', null, [cb2, cb3]);
-			const promise = d.trigger('evt_name');
-			promise.then(result => {
-				expect(cb1.called, 'cb1 not called').to.be.false;
-				expect(cb2.called, 'cb2 called').to.be.true;
-				expect(cb3.called, 'cb3 called').to.be.true;
-				done();
-			})
-			.catch(err => {
-				console.log(err);
-				done();
-			});
-			// setTimeout(() => {
-			// 	expect(cb1.called, 'cb1 not called').to.be.false;
-			// 	expect(cb2.called, 'cb2 called').to.be.true;
-			// 	expect(cb3.called, 'cb3 called').to.be.true;
-			// 	done();
-			// }, 200);
+			yield d.trigger('evt_name');
+			expect(call1, 'cb1 not called').to.be.false;
+			expect(call2, 'cb2 called').to.be.true;
+			expect(call3, 'cb3 called').to.be.true;
+		});
+		it('should respect dependencies', function*() {
+			const d1 = new Dispatcher();
+			const callOrder1 = [];
+			const cb1 = (resolve, reject, data) => {
+				callOrder1.push(1);
+				resolve();
+			};
+			const cb2 = (resolve, reject, data) => {
+				callOrder1.push(2);
+				resolve();
+			};
+			const cb3 = (resolve, reject, data) => {
+				callOrder1.push(3);
+				resolve();
+			};
+			d1.on('user_store', 'evt_name', ['test_store'], [cb2, cb3]);
+			d1.on('test_store', 'evt_name', null, [cb1]);
+			yield d1.trigger('evt_name');
+			expect(callOrder1).to.deep.equal([1, 2, 3]);
+
+			const d2 = new Dispatcher();
+			const callOrder2 = [];
+			const cb4 = (resolve, reject, data) => {
+				callOrder2.push(4);
+				resolve();
+			};
+			const cb5 = (resolve, reject, data) => {
+				callOrder2.push(5);
+				resolve();
+			};
+			const cb6 = (resolve, reject, data) => {
+				callOrder2.push(6);
+				resolve();
+			};
+			d2.on('user_store', 'evt_name', null, [cb5, cb6]);
+			d2.on('test_store', 'evt_name', ['user_store'], [cb4]);
+			yield d2.trigger('evt_name');
+			expect(callOrder2).to.deep.equal([5, 6, 4]);
 		});
 	});
 });

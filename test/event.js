@@ -55,46 +55,51 @@ describe('Event', function() {
 			expect(function(){ e.trigger(null); }, 'null first argument').to.throw('Event.trigger requires a string eventName');
 		});
 
-		it('should cause all event handlers to run', function(done) {
+		it('should cause all event handlers to run', function*() {
 			let e = new Event();
 			let numTriggers = 0;
-			e.on('evt_name', () => {
+			e.on('evt_name', (resolve, reject) => {
 				numTriggers++;
-				if(numTriggers >= 2) {
-					done();
-				}
+				resolve();
 			});
 
-			e.on('evt_name', () => {
+			e.on('evt_name', (resolve, reject) => {
 				numTriggers++;
-				if(numTriggers >= 2) {
-					done();
-				}
+				resolve();
 			});
 
-			e.trigger('evt_name');
+			yield e.trigger('evt_name');
+			expect(numTriggers).to.equal(2);
 		});
 
-		it('should pass through the event object', function(done) {
+		it('should pass through the event object', function*() {
 			let evtObj = { foo: 'bar', baz: 7 };
 			let e = new Event();
-			e.on('evt_name', (data) => {
+			let called = false;
+			e.on('evt_name', (resolve, reject, data) => {
 				expect(data).to.deep.equal(evtObj);
-				done();
+				called = true;
+				resolve();
 			});
-			e.trigger('evt_name', evtObj);
+			yield e.trigger('evt_name', evtObj);
+			expect(called).to.be.true;
 		});
 
-		it('should not trigger irrelevant events', function(done) {
-			let e = new Event();
-			e.on('evt_name', (data) => {
-				setTimeout(done, 50);
+		it('should not trigger irrelevant events', function*() {
+			const e = new Event();
+			let call1 = false;
+			let call2 = false;
+			e.on('evt_name', (resolve, reject, data) => {
+				call1 = true;
+				setTimeout(resolve, 50);
 			});
 			e.on('irrelevant', (data) => {
-				expect(true, 'irrelevant event ignored').to.equal(false);
-				done();
+				call2 = true;
+				resolve();
 			});
-			e.trigger('evt_name', {});
+			yield e.trigger('evt_name', {});
+			expect(call1).to.be.true;
+			expect(call2).to.be.false;
 		});
 	});
 

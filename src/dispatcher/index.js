@@ -27,19 +27,17 @@ module.exports = function Dispatcher() {
 		if(!storeEventHandlers[eventName].hasOwnProperty(storeDescriptor)) {
 			storeEventHandlers[eventName][storeDescriptor] = [];
 		}
-		let cbs = storeEventHandlers[eventName][storeDescriptor];
-		storeEventHandlers[eventName][storeDescriptor] = cbs.concat({
+		storeEventHandlers[eventName][storeDescriptor] = {
 			dependencies,
 			promiseFunctions
-		});
+		};
 
 		eventHandler.off(eventName);
 		eventHandler.on(eventName, this.handleAllEvents(eventName));
 	};
 
 	this.handleAllEvents = function(eventName) {
-		return (data) => {
-			console.log('handleAllEvents');
+		return (resolve, reject, data) => {
 			if(!storeEventHandlers.hasOwnProperty(eventName)) {
 				return;
 			}
@@ -49,26 +47,31 @@ module.exports = function Dispatcher() {
 				const store = handlersByStore[storeDescriptor];
 				autoObj[storeDescriptor] = {
 					dependencies: store.dependencies || [],
-					run: this.handleStoreEvents(store.promiseFunctions)
+					promise: this.handleStoreEvents(store.promiseFunctions, data)
 				};
 			}
 
-			// Todo: should we call .then or .catch here?
-			return auto(autoObj);
+			return auto(autoObj).then(resolve).catch(reject);
 
 		};
 	};
 
-	this.handleStoreEvents = function(promiseFunctions) {
+	this.handleStoreEvents = function(promiseFunctions, data) {
 		return function(resolve, reject) {
 			if(!promiseFunctions.length) {
 				return;
 			}
-			let promise = new Promise(promiseFunctions[0]);
+			let promise = new Promise((resolve, reject) => {
+				promiseFunctions[0](resolve, reject, data);
+			});
 			for(let i=1; i<promiseFunctions.length; i++) {
-				promise = promise.then(promiseFunctions[i]);
+				promise = promise.then(() => {
+					return new Promise((resolve, reject) => {
+						promiseFunctions[i](resolve, reject, data);
+					});
+				});
 			}
-			promise.then(resolve).catch(reject);
+			return promise.then(resolve).catch(reject);
 		};
 	};
 
