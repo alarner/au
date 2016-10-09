@@ -7,6 +7,8 @@ var isFunction = require('../is-function');
 module.exports = function Dispatcher() {
 	var storeEventHandlers = {};
 	var eventHandler = new Event();
+	var queue = [];
+	var currentEvent = undefined;
 
 	this.on = function (storeDescriptor, eventName, dependencies, run) {
 		if (typeof storeDescriptor !== 'string') {
@@ -63,5 +65,35 @@ module.exports = function Dispatcher() {
 		};
 	};
 
-	this.trigger = eventHandler.trigger;
+	this.trigger = function (eventName, data) {
+		return new Promise(function (resolve, reject) {
+			queue.push({
+				run: function run() {
+					return eventHandler.trigger(eventName, data);
+				},
+				resolve: resolve,
+				reject: reject
+			});
+			if (!currentEvent) {
+				next();
+			}
+		});
+	};
+
+	var next = function next() {
+		currentEvent = queue.shift();
+		if (currentEvent) {
+			processEvent(currentEvent);
+		}
+	};
+
+	var processEvent = function processEvent(event) {
+		event.run().then(function (data) {
+			event.resolve(data);
+			next();
+		}).catch(function (err) {
+			event.reject(err);
+			next();
+		});
+	};
 };

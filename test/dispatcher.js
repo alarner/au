@@ -78,5 +78,31 @@ describe('Dispatcher', function() {
 			yield d2.trigger('evt_name');
 			expect(callOrder1).to.deep.equal([1, 2]);
 		});
+		it('should run events in series', function*() {
+			const d1 = new Dispatcher();
+			const callOrder1 = [];
+			const cb1 = (resolve, reject, data) => {
+				callOrder1.push(1);
+				resolve();
+			};
+			const cb2 = (resolve, reject, data) => {
+				setTimeout(() => {
+					callOrder1.push(2);
+					resolve();
+				}, 500);
+			};
+			const cb3 = (resolve, reject, data) => {
+				callOrder1.push(3);
+				resolve();
+			};
+			d1.on('user_store', 'evt_name1', ['test_store'], cb2);
+			d1.on('test_store', 'evt_name1', null, cb1);
+			d1.on('test_store', 'evt_name2', null, cb3);
+			yield Promise.all([
+				d1.trigger('evt_name1'),
+				d1.trigger('evt_name2'),
+			]);
+			expect(callOrder1).to.deep.equal([1, 2, 3]);
+		});
 	});
 });

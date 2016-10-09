@@ -3,8 +3,10 @@ const auto = require('../promise.auto');
 const isFunction = require('../is-function');
 
 module.exports = function Dispatcher() {
-	let storeEventHandlers = {};
-	let eventHandler = new Event();
+	const storeEventHandlers = {};
+	const eventHandler = new Event();
+	const queue = [];
+	let currentEvent = undefined;
 
 	this.on = function(storeDescriptor, eventName, dependencies, run) {
 		if(typeof storeDescriptor !== 'string') {
@@ -60,5 +62,35 @@ module.exports = function Dispatcher() {
 		};
 	};
 
-	this.trigger = eventHandler.trigger;
+	this.trigger = function(eventName, data) {
+		return new Promise((resolve, reject) => {
+			queue.push({
+				run: () => eventHandler.trigger(eventName, data),
+				resolve: resolve,
+				reject: reject
+			});
+			if(!currentEvent) {
+				next();
+			}
+		});
+	};
+
+	const next = function() {
+		currentEvent = queue.shift();
+		if(currentEvent) {
+			processEvent(currentEvent);
+		}
+	};
+
+	const processEvent = (event) => {
+		event.run()
+		.then((data) => {
+			event.resolve(data);
+			next();
+		})
+		.catch((err) => {
+			event.reject(err);
+			next();
+		});
+	};
 };
