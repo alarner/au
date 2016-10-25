@@ -36,6 +36,7 @@ module.exports = function (storeDescriptor, dispatcher) {
 		this.ignore = function (componentName) {
 			if (componentEvents.hasOwnProperty(componentName)) {
 				eventHandler.off(componentEvents[componentName]);
+				delete componentEvents[componentName];
 			}
 		};
 
