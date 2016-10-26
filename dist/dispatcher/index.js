@@ -1,7 +1,7 @@
 'use strict';
 
+var auto = require('promise.auto');
 var Event = require('../event/index');
-var auto = require('../promise.auto');
 var isFunction = require('../is-function');
 
 module.exports = function Dispatcher() {
@@ -23,9 +23,6 @@ module.exports = function Dispatcher() {
 		dependencies = dependencies || [];
 		if (!storeEventHandlers.hasOwnProperty(eventName)) {
 			storeEventHandlers[eventName] = {};
-		}
-		if (!storeEventHandlers[eventName].hasOwnProperty(storeDescriptor)) {
-			storeEventHandlers[eventName][storeDescriptor] = [];
 		}
 		storeEventHandlers[eventName][storeDescriptor] = {
 			dependencies: dependencies,
@@ -49,7 +46,7 @@ module.exports = function Dispatcher() {
 				var store = handlersByStore[storeDescriptor];
 				autoObj[storeDescriptor] = {
 					dependencies: store.dependencies || [],
-					run: _this.handleStoreEvents(store.run, data)
+					promise: _this.handleStoreEvents(store.run, data)
 				};
 			}
 
