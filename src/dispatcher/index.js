@@ -59,7 +59,7 @@ module.exports = function Dispatcher() {
 		};
 	};
 
-	this.trigger = function(eventName, data, queue = true) {
+	this.trigger = function(eventName, data = {}, queue = true) {
 		if(!queue) {
 			return eventHandler.trigger(eventName, data);
 		}
