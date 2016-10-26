@@ -55,9 +55,9 @@ module.exports = function Dispatcher() {
 	};
 
 	this.handleStoreEvents = function (run, data) {
-		return function (resolve, reject) {
+		return function (resolve, reject, result) {
 			return new Promise(function (resolve, reject) {
-				run(resolve, reject, data);
+				run(resolve, reject, { event: data, result: result });
 			}).then(resolve).catch(reject);
 		};
 	};

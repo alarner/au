@@ -51,10 +51,10 @@ module.exports = function Dispatcher() {
 		};
 	};
 
-	this.handleStoreEvents = function(run, data) {
-		return function(resolve, reject) {
-			return new Promise((resolve, reject) => {
-				run(resolve, reject, data);
+	this.handleStoreEvents = function (run, data) {
+		return function (resolve, reject, result) {
+			return new Promise(function (resolve, reject) {
+				run(resolve, reject, { event: data, result});
 			}).then(resolve).catch(reject);
 		};
 	};
