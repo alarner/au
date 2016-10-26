@@ -1,5 +1,5 @@
+const auto = require('promise.auto');
 const Event = require('../event/index');
-const auto = require('../promise.auto');
 const isFunction = require('../is-function');
 
 module.exports = function Dispatcher() {
@@ -22,9 +22,6 @@ module.exports = function Dispatcher() {
 		if(!storeEventHandlers.hasOwnProperty(eventName)) {
 			storeEventHandlers[eventName] = {};
 		}
-		if(!storeEventHandlers[eventName].hasOwnProperty(storeDescriptor)) {
-			storeEventHandlers[eventName][storeDescriptor] = [];
-		}
 		storeEventHandlers[eventName][storeDescriptor] = {
 			dependencies,
 			run
@@ -45,7 +42,7 @@ module.exports = function Dispatcher() {
 				const store = handlersByStore[storeDescriptor];
 				autoObj[storeDescriptor] = {
 					dependencies: store.dependencies || [],
-					run: this.handleStoreEvents(store.run, data)
+					promise: this.handleStoreEvents(store.run, data)
 				};
 			}
 
