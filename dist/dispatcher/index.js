@@ -50,7 +50,7 @@ module.exports = function Dispatcher() {
 				};
 			}
 
-			return auto(autoObj).then(resolve).catch(reject);
+			return auto(autoObj, { stopOnError: true }).then(resolve).catch(reject);
 		};
 	};
 
