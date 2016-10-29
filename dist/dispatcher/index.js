@@ -62,7 +62,8 @@ module.exports = function Dispatcher() {
 		};
 	};
 
-	this.trigger = function (eventName, data) {
+	this.trigger = function (eventName) {
+		var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 		var queue = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
 
 		if (!queue) {
