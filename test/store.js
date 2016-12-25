@@ -1,33 +1,30 @@
 const expect = require('chai').expect;
-const storeBuilder = require('../src/store/index');
+const Store = require('../src/store/index');
 const Dispatcher = require('../src/dispatcher/index');
 const sinon = require('sinon');
 
 describe('storeBuilder', function() {
 	it('should exist', function() {
-		expect(storeBuilder).to.be.a('function');
+		expect(Store.build).to.be.a('function');
 	});
 
 	it('should build a Store class', function() {
 		const d = new Dispatcher();
-		const Store = storeBuilder('TestStore', d);
-		expect(Store).to.be.a('function');
+		const TestStore = Store.build('TestStore', d);
+		expect(TestStore).to.be.a('function');
 	});
 });
 
 describe('Store', function() {
 	const d = new Dispatcher();
-	const Store = storeBuilder('TestStore', d);
-
-	class TestStore extends Store {
-		__contructor() {
-			this.events = {};
+	const TestStore = Store.build('TestStore', d, {
+		foo: {
+			run(resolve, reject, action) {
+				resolve(this.get());
+				this.change('foo');
+			}
 		}
-
-		get() {
-			return { foo: 'bar' };
-		}
-	}
+	});
 
 	const ts = new TestStore();
 
@@ -51,6 +48,20 @@ describe('Store', function() {
 		});
 
 		it('should call the callback function when the store is changed', function*() {
+			const test = new TestStore();
+			let called = false;
+			test.listen('ButtonComponent', (resolve, reject, data) => {
+				called = true;
+				expect(data.event).to.equal('test_evt');
+				resolve();
+			});
+
+			yield test.change('test_evt');
+
+			expect(called).to.be.true;
+		});
+
+		it('should bind the store to the callback functions', function*() {
 			const test = new TestStore();
 			let called = false;
 			test.listen('ButtonComponent', (resolve, reject, data) => {
@@ -108,7 +119,7 @@ describe('Store', function() {
 		});
 
 		it('should return the current value of the store', function() {
-			const test = new TestStore();
+			const test = new TestStore({ foo: 'bar' });
 			const setState = sinon.stub();
 			const state = test.connectToState('ButtonComponent', setState);
 
@@ -116,11 +127,11 @@ describe('Store', function() {
 		});
 
 		it('should call setState with the new value from the get method', function*() {
-			const test = new TestStore();
+			const test = new TestStore({ foo: 'bar' });
 			const setState = sinon.stub();
-			test.connectToState('ButtonComponent', setState);
+			const state = test.connectToState('ButtonComponent', setState);
 
-			yield test.change('test_evt');
+			yield d.trigger('foo');
 
 			expect(setState.called, 'called').to.be.true;
 			expect(setState.firstCall.args[0]).to.deep.equal({ TestStore: { foo: 'bar' } });

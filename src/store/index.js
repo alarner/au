@@ -1,53 +1,67 @@
 const Event = require('../event/index');
-module.exports = function(storeDescriptor, dispatcher) {
-	return function Store(events) {
-		// listen for events on the dispatcher
-		this.events = events || {};
-		const componentEvents = {};
-		const eventHandler = new Event();
+module.exports = {
+	build(storeDescriptor, dispatcher, events = {}) {
 
-		for(const eventName in this.events) {
-			dispatcher.on(
-				storeDescriptor,
-				eventName,
-				this.events[eventName].dependencies || [],
-				this.events[eventName].run.bind(this)
-			);
-		}
+		function Store(initialState = {}) {
+			const _componentEvents = {};
+			const _eventHandler = new Event();
+			const _actionHistory = [];
+			const _stateHistory = [];
 
-		this.connectToState = function(componentName, setState, key) {
-			this.listen(componentName, (resolve, reject) => {
-				const newState = {};
-				newState[key || storeDescriptor] = this.get();
-				setState(newState);
-				resolve();
-			});
+			_stateHistory.push(initialState);
 
-			return this.get();
-		};
+			this.connectToState = function(componentName, setState, key) {
+				this.listen(componentName, (resolve, reject) => {
+					const newState = {};
+					newState[key || storeDescriptor] = this.get();
+					setState(newState);
+					resolve();
+				});
 
-		this.listen = function(componentName, cb) {
-			if(!componentEvents.hasOwnProperty(componentName)) {
-				componentEvents[componentName] = eventHandler.on('CHANGE', cb);
+				return this.get();
+			};
+
+			this.listen = function(componentName, cb) {
+				if(!_componentEvents.hasOwnProperty(componentName)) {
+					_componentEvents[componentName] = _eventHandler.on('CHANGE', cb);
+				}
+				else {
+					throw new Error(
+						`"${componentName}" component is already listening to the store ` +
+						`"${storeDescriptor}"`
+					);
+				}
+			};
+
+			this.ignore = function(componentName) {
+				if(_componentEvents.hasOwnProperty(componentName)) {
+					_eventHandler.off(_componentEvents[componentName]);
+					delete _componentEvents[componentName];
+				}
+			};
+
+			this.change = function(eventName) {
+				return _eventHandler.trigger('CHANGE', {event: eventName});
+			};
+
+			this.get = function() {
+				return _stateHistory[_stateHistory.length - 1];
+			};
+
+			this.descriptor = function() {
+				return storeDescriptor;
 			}
-			else {
-				throw new Error(
-					`"${componentName}" component is already listening to the store ` +
-					`"${storeDescriptor}"`
+
+			for(const eventName in events) {
+				dispatcher.on(
+					this,
+					eventName,
+					events[eventName].dependencies || [],
+					events[eventName].run.bind(this)
 				);
 			}
 		};
 
-		this.ignore = function(componentName) {
-			if(componentEvents.hasOwnProperty(componentName)) {
-				eventHandler.off(componentEvents[componentName]);
-				delete componentEvents[componentName];
-			}
-		};
-
-		// trigger a change event on the store
-		this.change = function(eventName) {
-			return eventHandler.trigger('CHANGE', {event: eventName});
-		};
-	};
+		return Store;
+	}
 };

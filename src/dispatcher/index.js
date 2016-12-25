@@ -8,9 +8,9 @@ module.exports = function Dispatcher() {
 	const eventQueue = [];
 	let currentEvent = undefined;
 
-	this.on = function(storeDescriptor, eventName, dependencies, run) {
-		if(typeof storeDescriptor !== 'string') {
-			throw new Error('First argument storeDescriptor must be a string');
+	this.on = function(store, eventName, dependencies, run) {
+		if(!store || !store.descriptor || !isFunction(store.descriptor) || typeof store.descriptor() !== 'string') {
+			throw new Error('First argument must be a Store');
 		}
 		if(typeof eventName !== 'string') {
 			throw new Error('Second argument eventName must be a string');
@@ -22,7 +22,7 @@ module.exports = function Dispatcher() {
 		if(!storeEventHandlers.hasOwnProperty(eventName)) {
 			storeEventHandlers[eventName] = {};
 		}
-		storeEventHandlers[eventName][storeDescriptor] = {
+		storeEventHandlers[eventName][store.descriptor()] = {
 			dependencies,
 			run
 		};
@@ -55,7 +55,9 @@ module.exports = function Dispatcher() {
 		return function (resolve, reject, result) {
 			return new Promise(function (resolve, reject) {
 				run(resolve, reject, { event: data, result});
-			}).then(resolve).catch(reject);
+			})
+			.then(resolve)
+			.catch(reject);
 		};
 	};
 
