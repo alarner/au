@@ -24,7 +24,8 @@ module.exports = function Dispatcher() {
 		}
 		storeEventHandlers[eventName][store.descriptor()] = {
 			dependencies,
-			run
+			run,
+			store
 		};
 
 		eventHandler.off(eventName);
@@ -39,10 +40,10 @@ module.exports = function Dispatcher() {
 			let autoObj = {};
 			let handlersByStore = storeEventHandlers[eventName];
 			for(const storeDescriptor in handlersByStore) {
-				const store = handlersByStore[storeDescriptor];
+				const {run, store, dependencies} = handlersByStore[storeDescriptor];
 				autoObj[storeDescriptor] = {
-					dependencies: store.dependencies || [],
-					promise: this.handleStoreEvents(store.run, data)
+					dependencies: dependencies || [],
+					promise: this.handleStoreEvents(eventName, run, store, data)
 				};
 			}
 
@@ -51,13 +52,25 @@ module.exports = function Dispatcher() {
 		};
 	};
 
-	this.handleStoreEvents = function (run, data) {
+	this.handleStoreEvents = function (eventName, run, store, data) {
 		return function (resolve, reject, result) {
 			return new Promise(function (resolve, reject) {
 				run(resolve, reject, { event: data, result});
 			})
-			.then(resolve)
-			.catch(reject);
+			.then((result) => {
+				store.setData(result);
+				store.setErrors({});
+				store.change(eventName);
+				resolve();
+			})
+			.catch((errors) => {
+				if(errors instanceof Error) {
+					return reject(errors);
+				}
+				store.setErrors(errors);
+				store.change(eventName);
+				resolve();
+			});
 		};
 	};
 

@@ -123,7 +123,7 @@ describe('Store', function() {
 			const setState = sinon.stub();
 			const state = test.connectToState('ButtonComponent', setState);
 
-			expect(state).to.deep.equal({ foo: 'bar' });
+			expect(state).to.deep.equal({ data: { foo: 'bar' }, errors: {} });
 		});
 
 		it('should call setState with the new value from the get method', function*() {
@@ -134,7 +134,7 @@ describe('Store', function() {
 			yield d.trigger('foo');
 
 			expect(setState.called, 'called').to.be.true;
-			expect(setState.firstCall.args[0]).to.deep.equal({ TestStore: { foo: 'bar' } });
+			expect(setState.firstCall.args[0]).to.deep.equal({ TestStore: { data: { foo: 'bar' }, errors: {} } });
 		});
 	});
 
@@ -144,7 +144,7 @@ describe('Store', function() {
 		});
 
 		it('should get the current version of the state', function() {
-			expect(ts.get()).to.deep.equal({foo: 'bar'});
+			expect(ts.get()).to.deep.equal({ data: { foo: 'bar' }, errors: {} });
 		});
 	});
 

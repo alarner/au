@@ -9,7 +9,10 @@ module.exports = React.createClass({
     },
     render: function() {
         return (
-            <button onClick={() => d.trigger('click')}>{this.state.likeCount}</button>
+            <div>
+                { this.state.likeCount.errors.default || '' }
+                <button onClick={() => d.trigger('click')}>{this.state.likeCount.data}</button>
+            </div>
         );
     }
 });

@@ -7,6 +7,7 @@ module.exports = {
 			const _eventHandler = new Event();
 			const _actionHistory = [];
 			const _stateHistory = [];
+			let _errors = {};
 
 			_stateHistory.push(initialState);
 
@@ -45,12 +46,23 @@ module.exports = {
 			};
 
 			this.get = function() {
-				return _stateHistory[_stateHistory.length - 1];
+				return {
+					data: _stateHistory[_stateHistory.length - 1],
+					errors: _errors
+				};
 			};
 
 			this.descriptor = function() {
 				return storeDescriptor;
-			}
+			};
+
+			this.setData = function(data) {
+				_stateHistory.push(data);
+			};
+
+			this.setErrors = function(errors) {
+				_errors = errors;
+			};
 
 			for(const eventName in events) {
 				dispatcher.on(
