@@ -26,7 +26,7 @@ describe('Store', function() {
 		}
 	});
 
-	const ts = new TestStore();
+	const ts = new TestStore({foo: 'bar'});
 
 	describe('listen', function() {
 		it('should exist', function() {
@@ -135,6 +135,26 @@ describe('Store', function() {
 
 			expect(setState.called, 'called').to.be.true;
 			expect(setState.firstCall.args[0]).to.deep.equal({ TestStore: { foo: 'bar' } });
+		});
+	});
+
+	describe('get', function() {
+		it('should exist', function() {
+			expect(ts.get).to.be.a('function');
+		});
+
+		it('should get the current version of the state', function() {
+			expect(ts.get()).to.deep.equal({foo: 'bar'});
+		});
+	});
+
+	describe('descriptor', function() {
+		it('should exist', function() {
+			expect(ts.descriptor).to.be.a('function');
+		});
+
+		it('should return the store descriptor', function() {
+			expect(ts.descriptor()).to.equal('TestStore');
 		});
 	});
 });
