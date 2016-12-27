@@ -1,5 +1,6 @@
 const auto = require('promise.auto');
 const Event = require('../event/index');
+const OptimisticPromise = require('../optimistic-promise/index');
 const isFunction = require('../is-function');
 
 module.exports = function Dispatcher() {
@@ -53,22 +54,33 @@ module.exports = function Dispatcher() {
 	};
 
 	this.handleStoreEvents = function (eventName, run, store, data) {
+		function success(result) {
+			let optimisticData = result;
+			if(result instanceof OptimisticPromise) {
+				optimisticData = result.optimisticValue();
+				result.promise().then(success).catch(failure);
+			}
+			store.setData(optimisticData);
+			store.setErrors({});
+			store.change(eventName);
+		}
+		function failure(errors) {
+			if(errors instanceof Error) {
+				throw errors;
+			}
+			store.setErrors(errors);
+			store.change(eventName);
+		}
 		return function (resolve, reject, result) {
 			return new Promise(function (resolve, reject) {
 				run(resolve, reject, { event: data, result});
 			})
 			.then((result) => {
-				store.setData(result);
-				store.setErrors({});
-				store.change(eventName);
+				success(result);
 				resolve();
 			})
 			.catch((errors) => {
-				if(errors instanceof Error) {
-					return reject(errors);
-				}
-				store.setErrors(errors);
-				store.change(eventName);
+				failure(errors);
 				resolve();
 			});
 		};

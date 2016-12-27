@@ -1,4 +1,4 @@
-const { Store } = require('../../../src/index');
+const { Store, OptimisticPromise } = require('../../../src/index');
 const d = require('../dispatcher');
 
 const LikeCount = Store.build('likeCount', d, {
@@ -7,13 +7,25 @@ const LikeCount = Store.build('likeCount', d, {
         dependencies: [],
         // the function that should run when the click happens
         run(resolve, reject, action) {
-            const oldVal = this.get().data;
-            if(Math.random() < 0.333) {
-                reject({
-                    default: 'Something unexpected went wrong...'
-                })
-            }
-            resolve(this.get().data + 1);
+            resolve(new OptimisticPromise((resolve, reject) => {
+                setTimeout(() => {
+                    const rand = Math.random();
+                    if(rand < 0.333) {
+                        reject({
+                            default: 'Something unexpected went wrong...'
+                        })
+                    }
+                    else if(rand < 0.666) {
+                        resolve(3);
+                    }
+                    else {
+                        resolve(7);
+                    }
+                }, 1000);
+            }, this.get().data + 1));
+            // const oldVal = this.get().data;
+            
+            // resolve(this.get().data + 1);
         }
     }
 });
