@@ -1,6 +1,5 @@
 const auto = require('promise.auto');
 const Event = require('../event/index');
-const OptimisticPromise = require('../optimistic-promise/index');
 const isFunction = require('../is-function');
 
 module.exports = function Dispatcher() {
@@ -9,15 +8,12 @@ module.exports = function Dispatcher() {
 	const eventQueue = [];
 	let currentEvent = undefined;
 
-	this.on = function(store, eventName, dependencies, run) {
+	this.on = function(store, eventName, dependencies) {
 		if(!store || !store.descriptor || !isFunction(store.descriptor) || typeof store.descriptor() !== 'string') {
 			throw new Error('First argument must be a Store');
 		}
 		if(typeof eventName !== 'string') {
 			throw new Error('Second argument eventName must be a string');
-		}
-		if(!isFunction(run)) {
-			throw new Error('Fourth argument run must be a function');
 		}
 		dependencies = dependencies || [];
 		if(!storeEventHandlers.hasOwnProperty(eventName)) {
@@ -25,7 +21,6 @@ module.exports = function Dispatcher() {
 		}
 		storeEventHandlers[eventName][store.descriptor()] = {
 			dependencies,
-			run,
 			store
 		};
 
@@ -41,48 +36,19 @@ module.exports = function Dispatcher() {
 			let autoObj = {};
 			let handlersByStore = storeEventHandlers[eventName];
 			for(const storeDescriptor in handlersByStore) {
-				const {run, store, dependencies} = handlersByStore[storeDescriptor];
+				const {store, dependencies} = handlersByStore[storeDescriptor];
 				autoObj[storeDescriptor] = {
 					dependencies: dependencies || [],
-					promise: this.handleStoreEvents(eventName, run, store, data)
+					promise: (resolve, reject, result) => {
+						return store.processEvent(eventName, { event: data, result })
+							.then(resolve)
+							.catch(reject);
+					}
 				};
 			}
 
 			return auto(autoObj, { stopOnError: true }).then(resolve).catch(reject);
 
-		};
-	};
-
-	this.handleStoreEvents = function (eventName, run, store, data) {
-		function success(result) {
-			let optimisticData = result;
-			if(result instanceof OptimisticPromise) {
-				optimisticData = result.optimisticValue();
-				result.promise().then(success).catch(failure);
-			}
-			store.setData(optimisticData);
-			store.setErrors({});
-			store.change(eventName);
-		}
-		function failure(errors) {
-			if(errors instanceof Error) {
-				throw errors;
-			}
-			store.setErrors(errors);
-			store.change(eventName);
-		}
-		return function (resolve, reject, result) {
-			return new Promise(function (resolve, reject) {
-				run(resolve, reject, { event: data, result});
-			})
-			.then((result) => {
-				success(result);
-				resolve();
-			})
-			.catch((errors) => {
-				failure(errors);
-				resolve();
-			});
 		};
 	};
 
