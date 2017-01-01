@@ -51,15 +51,17 @@ module.exports = function Event() {
 			throw new Error('Event.trigger requires a string eventName');
 		}
 		if(listeners.hasOwnProperty(eventName) && listeners[eventName].length) {
+			const incomplete = listeners[eventName].slice(0);
 			const makePromise = (cb) => {
 				if(!listeners[eventName].some((listenerInfo) => cb === listenerInfo.cb)) {
 					return Promise.resolve();
 				}
 				return new Promise((resolve, reject) => cb(resolve, reject, data))
 			};
-			let promise = makePromise(listeners[eventName][0].cb);
-			for(let i=1; i<listeners[eventName].length; i++) {
-				promise = promise.then(() => makePromise(listeners[eventName][i].cb));
+			let promise = makePromise(incomplete.splice(0, 1)[0].cb);
+			while(incomplete.length > 0)  {
+				const cb = incomplete.splice(0, 1)[0].cb;
+				promise = promise.then(() => makePromise(cb));
 			}
 			return promise;
 		}
