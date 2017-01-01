@@ -55,6 +55,7 @@ module.exports = function Event() {
 		}
 		if (listeners.hasOwnProperty(eventName) && listeners[eventName].length) {
 			var _ret = function () {
+				var incomplete = listeners[eventName].slice(0);
 				var makePromise = function makePromise(cb) {
 					if (!listeners[eventName].some(function (listenerInfo) {
 						return cb === listenerInfo.cb;
@@ -65,16 +66,17 @@ module.exports = function Event() {
 						return cb(resolve, reject, data);
 					});
 				};
-				var promise = makePromise(listeners[eventName][0].cb);
+				var promise = makePromise(incomplete.splice(0, 1)[0].cb);
 
-				var _loop = function _loop(i) {
+				var _loop = function _loop() {
+					var cb = incomplete.splice(0, 1)[0].cb;
 					promise = promise.then(function () {
-						return makePromise(listeners[eventName][i].cb);
+						return makePromise(cb);
 					});
 				};
 
-				for (var i = 1; i < listeners[eventName].length; i++) {
-					_loop(i);
+				while (incomplete.length > 0) {
+					_loop();
 				}
 				return {
 					v: promise
