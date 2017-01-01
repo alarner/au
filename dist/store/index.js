@@ -28,8 +28,7 @@ module.exports = {
 				this.listen(componentName, function (resolve, reject) {
 					var newState = {};
 					newState[key || storeDescriptor] = _this.get();
-					setState(newState);
-					resolve();
+					setState(newState, resolve);
 				});
 
 				return this.get();

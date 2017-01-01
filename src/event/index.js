@@ -50,12 +50,18 @@ module.exports = function Event() {
 		if(!eventName || typeof eventName !== 'string') {
 			throw new Error('Event.trigger requires a string eventName');
 		}
-		if(listeners.hasOwnProperty(eventName)) {
-			return Promise.all(listeners[eventName].map((listenerInfo) => {
-				return new Promise((resolve, reject) => {
-					listenerInfo.cb(resolve, reject, data);
-				});
-			}));
+		if(listeners.hasOwnProperty(eventName) && listeners[eventName].length) {
+			const makePromise = (cb) => {
+				if(!listeners[eventName].some((listenerInfo) => cb === listenerInfo.cb)) {
+					return Promise.resolve();
+				}
+				return new Promise((resolve, reject) => cb(resolve, reject, data))
+			};
+			let promise = makePromise(listeners[eventName][0].cb);
+			for(let i=1; i<listeners[eventName].length; i++) {
+				promise = promise.then(() => makePromise(listeners[eventName][i].cb));
+			}
+			return promise;
 		}
 		return Promise.resolve();
 	};

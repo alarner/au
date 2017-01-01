@@ -55,21 +55,26 @@ describe('Event', function() {
 			expect(function(){ e.trigger(null); }, 'null first argument').to.throw('Event.trigger requires a string eventName');
 		});
 
-		it('should cause all event handlers to run', function*() {
+		it('should cause all event handlers to run in series', function*() {
 			let e = new Event();
 			let numTriggers = 0;
+			let date1 = null;
+			let date2 = null;
 			e.on('evt_name', (resolve, reject) => {
 				numTriggers++;
-				resolve();
+				date1 = new Date();
+				setTimeout(resolve, 100);
 			});
 
 			e.on('evt_name', (resolve, reject) => {
+				date2 = new Date();
 				numTriggers++;
 				resolve();
 			});
 
 			yield e.trigger('evt_name');
 			expect(numTriggers).to.equal(2);
+			expect(date2.getTime() - date1.getTime()).to.be.at.least(100);
 		});
 
 		it('should pass through the event object', function*() {

@@ -1,5 +1,7 @@
 'use strict';
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 var isFunction = require('../is-function');
 
 module.exports = function Event() {
@@ -51,12 +53,35 @@ module.exports = function Event() {
 		if (!eventName || typeof eventName !== 'string') {
 			throw new Error('Event.trigger requires a string eventName');
 		}
-		if (listeners.hasOwnProperty(eventName)) {
-			return Promise.all(listeners[eventName].map(function (listenerInfo) {
-				return new Promise(function (resolve, reject) {
-					listenerInfo.cb(resolve, reject, data);
-				});
-			}));
+		if (listeners.hasOwnProperty(eventName) && listeners[eventName].length) {
+			var _ret = function () {
+				var makePromise = function makePromise(cb) {
+					if (!listeners[eventName].some(function (listenerInfo) {
+						return cb === listenerInfo.cb;
+					})) {
+						return Promise.resolve();
+					}
+					return new Promise(function (resolve, reject) {
+						return cb(resolve, reject, data);
+					});
+				};
+				var promise = makePromise(listeners[eventName][0].cb);
+
+				var _loop = function _loop(i) {
+					promise = promise.then(function () {
+						return makePromise(listeners[eventName][i].cb);
+					});
+				};
+
+				for (var i = 1; i < listeners[eventName].length; i++) {
+					_loop(i);
+				}
+				return {
+					v: promise
+				};
+			}();
+
+			if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
 		}
 		return Promise.resolve();
 	};
