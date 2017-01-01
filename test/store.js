@@ -19,7 +19,7 @@ describe('Store', function() {
 	const d = new Dispatcher();
 	const TestStore = Store.build('TestStore', d, {
 		foo: {
-			run(event, state, resolve, reject) {
+			run(resolve, reject, event, state, dependencies) {
 				resolve(this.get());
 				this.change('foo');
 			}

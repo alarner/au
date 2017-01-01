@@ -31,7 +31,7 @@ describe('Dispatcher', function() {
 			const UserStore = Store.build('UserStore', d, {
 				evt_name: {
 					dependencies: [],
-					run(resolve, reject, data) {
+					run(resolve, reject, event, state, dependencies) {
 						call = true;
 						resolve();
 					}
@@ -47,7 +47,7 @@ describe('Dispatcher', function() {
 			const UserStore = Store.build('UserStore', d, {
 				evt_name: {
 					dependencies: [],
-					run(resolve, reject, data) {
+					run(resolve, reject, event, state, dependencies) {
 						call = true;
 						resolve();
 					}
@@ -62,7 +62,7 @@ describe('Dispatcher', function() {
 			const UserStore = Store.build('UserStore', d, {
 				evt_name: {
 					dependencies: [],
-					run(event, state, resolve, reject) {
+					run(resolve, reject, event, state, dependencies) {
 						call = true;
 						resolve();
 					}

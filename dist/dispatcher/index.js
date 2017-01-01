@@ -10,23 +10,20 @@ module.exports = function Dispatcher() {
 	var eventQueue = [];
 	var currentEvent = undefined;
 
-	this.on = function (storeDescriptor, eventName, dependencies, run) {
-		if (typeof storeDescriptor !== 'string') {
-			throw new Error('First argument storeDescriptor must be a string');
+	this.on = function (store, eventName, dependencies) {
+		if (!store || !store.descriptor || !isFunction(store.descriptor) || typeof store.descriptor() !== 'string') {
+			throw new Error('First argument must be a Store');
 		}
 		if (typeof eventName !== 'string') {
 			throw new Error('Second argument eventName must be a string');
-		}
-		if (!isFunction(run)) {
-			throw new Error('Fourth argument run must be a function');
 		}
 		dependencies = dependencies || [];
 		if (!storeEventHandlers.hasOwnProperty(eventName)) {
 			storeEventHandlers[eventName] = {};
 		}
-		storeEventHandlers[eventName][storeDescriptor] = {
+		storeEventHandlers[eventName][store.descriptor()] = {
 			dependencies: dependencies,
-			run: run
+			store: store
 		};
 
 		eventHandler.off(eventName);
@@ -34,31 +31,31 @@ module.exports = function Dispatcher() {
 	};
 
 	this.handleAllEvents = function (eventName) {
-		var _this = this;
-
 		return function (resolve, reject, data) {
 			if (!storeEventHandlers.hasOwnProperty(eventName)) {
 				return;
 			}
 			var autoObj = {};
 			var handlersByStore = storeEventHandlers[eventName];
-			for (var storeDescriptor in handlersByStore) {
-				var store = handlersByStore[storeDescriptor];
+
+			var _loop = function _loop(storeDescriptor) {
+				var _handlersByStore$stor = handlersByStore[storeDescriptor],
+				    store = _handlersByStore$stor.store,
+				    dependencies = _handlersByStore$stor.dependencies;
+
 				autoObj[storeDescriptor] = {
-					dependencies: store.dependencies || [],
-					promise: _this.handleStoreEvents(store.run, data)
+					dependencies: dependencies || [],
+					promise: function promise(resolve, reject, result) {
+						return store.processEvent(eventName, { event: data, result: result }).then(resolve).catch(reject);
+					}
 				};
+			};
+
+			for (var storeDescriptor in handlersByStore) {
+				_loop(storeDescriptor);
 			}
 
 			return auto(autoObj, { stopOnError: true }).then(resolve).catch(reject);
-		};
-	};
-
-	this.handleStoreEvents = function (run, data) {
-		return function (resolve, reject, result) {
-			return new Promise(function (resolve, reject) {
-				run(resolve, reject, { event: data, result: result });
-			}).then(resolve).catch(reject);
 		};
 	};
 

@@ -48,9 +48,11 @@ module.exports = {
 				return _eventHandler.trigger('CHANGE', {event: eventName});
 			};
 
-			this.loading = function(val = true) {
+			this.loading = function(val = true, force = false) {
 				_loading = val;
-				this.change('loading');
+				if(_loading || force) {
+					this.change('loading');
+				}
 			};
 
 			this.get = function() {
@@ -84,7 +86,14 @@ module.exports = {
 				const eventSnapshot = new EventSnapshot(eventName, data, this.state());
 				// _eventHistory.push(eventSnapshot);
 				const promise = new Promise(
-					(resolve, reject) => events[eventName].run.call(this, data.event, this.state(), resolve, reject)
+					(resolve, reject) => events[eventName].run.call(
+						this,
+						resolve,
+						reject,
+						data.event,
+						this.state(),
+						data.result
+					)
 				);
 
 				return promise.then((result) => {

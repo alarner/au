@@ -6,8 +6,7 @@ const LikeCount = Store.build('likeCount', d, {
         // other stores that should process the click event before this one
         dependencies: [],
         // the function that should run when the click happens
-        run(event, state, resolve, reject) {
-            console.log(state + 1);
+        run(resolve, reject, event, state, dependencies) {
             resolve(state + 1);
         }
     }
