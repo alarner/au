@@ -1,6 +1,6 @@
 const expect = require('chai').expect;
-const Dispatcher = require('../src/dispatcher/index');
-const Store = require('../src/store/index');
+const Dispatcher = require('../src/Dispatcher');
+const Store = require('../src/Store');
 
 describe('Dispatcher', function() {
 	it('should exist', function() {
@@ -28,10 +28,10 @@ describe('Dispatcher', function() {
 		});
 		it('should not allow non-string eventName', function() {
 			const d = new Dispatcher();
-			const UserStore = Store.build('UserStore', d, {
+			const UserStore = Store.build({
 				evt_name: {
 					dependencies: [],
-					run(resolve, reject, event, state, dependencies) {
+					run(resolve, reject, action) {
 						call = true;
 						resolve();
 					}
@@ -47,7 +47,7 @@ describe('Dispatcher', function() {
 			const UserStore = Store.build('UserStore', d, {
 				evt_name: {
 					dependencies: [],
-					run(resolve, reject, event, state, dependencies) {
+					run(resolve, reject, action) {
 						call = true;
 						resolve();
 					}
@@ -62,7 +62,7 @@ describe('Dispatcher', function() {
 			const UserStore = Store.build('UserStore', d, {
 				evt_name: {
 					dependencies: [],
-					run(resolve, reject, event, state, dependencies) {
+					run(resolve, reject, action) {
 						call = true;
 						resolve();
 					}
