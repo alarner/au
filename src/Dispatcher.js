@@ -1,7 +1,7 @@
 import auto from 'async.auto';
 import { StoreError } from './error';
 
-module.exports = function Dispatcher(stores) {
+module.exports = function Dispatcher() {
 	const storeActionHandlers = {};
 	const actionQueue = [];
 	let currentAction = undefined;
@@ -38,7 +38,7 @@ module.exports = function Dispatcher(stores) {
 	this.handleAction = function(action, data) {
 		return new Promise((resolve, reject) => {
 			if(!storeActionHandlers.hasOwnProperty(action)) {
-				return Promise.resolve();
+				return resolve();
 			}
 			const autoObj = {};
 			for(const storeId in storeActionHandlers[action]) {

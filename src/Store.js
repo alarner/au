@@ -6,12 +6,12 @@ const build2 = (actions, dispatcher) => {
 	const _id = ids.nextStoreId();
 	const _history = [];
 	let _undoHistory = [];
-	const _componentListeners = {};
 	let _loading = false;
 	let _key = null;
 
 	class Store {
 		constructor(initialStateValue) {
+			this._componentListeners = {};
 			_history.push({
 				action: null,
 				state: {
@@ -32,8 +32,8 @@ const build2 = (actions, dispatcher) => {
 		}
 
 		listen(componentKey, cb) {
-			if(!_componentListeners.hasOwnProperty(componentKey)) {
-				_componentListeners[componentKey] = cb;
+			if(!this._componentListeners.hasOwnProperty(componentKey)) {
+				this._componentListeners[componentKey] = cb;
 			}
 			else {
 				throw new Error(
@@ -50,11 +50,12 @@ const build2 = (actions, dispatcher) => {
 				newState[key] = this.all();
 				setState(newState, resolve);
 			});
+			return this.all();
 		}
 
 		ignore(componentKey) {
-			if(_componentListeners.hasOwnProperty(componentKey)) {
-				delete _componentListeners[componentKey];
+			if(this._componentListeners.hasOwnProperty(componentKey)) {
+				delete this._componentListeners[componentKey];
 			}
 		}
 
@@ -112,10 +113,17 @@ const build2 = (actions, dispatcher) => {
 		}
 
 		change(action) {
-			const keys = Object.keys(_componentListeners);
+			const keys = Object.keys(this._componentListeners);
 			return Promise.all(
 				keys.map(
-					(key) => new Promise(_componentListeners[key])
+					(key) => new Promise(
+						(resolve, reject) => this._componentListeners[key].call(
+							this,
+							resolve,
+							reject,
+							{ action }
+						)
+					)
 				)
 			);
 		}
