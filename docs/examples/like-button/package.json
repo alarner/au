@@ -19,7 +19,7 @@
     "webpack": "^3.8.1"
   },
   "dependencies": {
-    "au-flux": "^3.0.1",
+    "au-flux": "^3.0.2",
     "react": "^16.1.1",
     "react-dom": "^16.1.1"
   }
