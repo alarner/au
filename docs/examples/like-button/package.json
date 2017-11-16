@@ -10,7 +10,16 @@
   "author": "Aaron Larner",
   "license": "MIT",
   "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
     "html-webpack-plugin": "^2.30.1",
     "webpack": "^3.8.1"
+  },
+  "dependencies": {
+    "au-flux": "^3.0.0",
+    "react": "^16.1.1",
+    "react-dom": "^16.1.1"
   }
 }
