@@ -1,6 +1,6 @@
 # AU Flux
 
-Building complicated, intaractive UI applications is hard. Flux is the application architecture that Facebook uses for building these types of applications on the web. There are many different implementations of the Flux architecture, but I found them difficult to wrap my head around. AU Flux is a simplified implementation of a Flux architecture with lots of examples and step by step guides on how to do lots of common things. Best of all there's very little boilerplate code.
+Building complicated, intaractive UI applications is hard. Flux is the application architecture that Facebook uses for building these types of applications on the web. There are many different implementations of the Flux architecture, but I found them difficult to wrap my head around. AU Flux is a simplified implementation of a Flux architecture with a few basic additions to make development more fun and more efficient.
 
 ## A simple react component...
 
@@ -30,11 +30,13 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 class Button extends React.Component {
+    // Set the initial state
     constructor(props) {
         super(props);
         this.state = { numLikes: 0 };
     }
     render() {
+        // On each click increment the state by one
         return (
             <div>
                 <button onClick={() => this.setState({ numLikes: this.state.numLikes+1 })}>
@@ -50,7 +52,7 @@ ReactDOM.render(<Button />, document.getElementById('app'));
 
 ## Managing more complex data...
 
-This is great, but what if we want to also store the number of likes in a database on our server, and we'd also like to allow other components in our web app to display the number of likes (accurately). As complexity grows, this approach to storing data can become very cumbersome. Flux architecture prescribes what should happen when an action occurs within our UI (like clicking on a button). The general flow of information looks like this:
+This is great, but what if we want to also store the number of likes in a database on our server? Maybe we'd also like to allow other components in our web app to display the number of likes (accurately). As complexity grows, this approach to storing data can become very cumbersome. Flux architecture prescribes what should happen when an action occurs within our UI (like clicking on a button). The general flow of information looks like this:
 
 ![Flux Data Flow](http://fluxxor.com/images/flux-simple.png)
 
