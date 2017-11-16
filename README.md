@@ -11,13 +11,13 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 class Button extends React.Component {
-	render() {
-		return (
-			<div>
-				<button>0 Likes</button>
-			</div>
-		);
-	}
+    render() {
+        return (
+            <div>
+                <button>0 Likes</button>
+            </div>
+        );
+    }
 }
 
 ReactDOM.render(<Button />, document.getElementById('app'));
@@ -30,19 +30,19 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 class Button extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = { numLikes: 0 };
-	}
-	render() {
-		return (
-			<div>
-				<button onClick={() => this.setState({ numLikes: this.state.numLikes+1 })}>
-					{this.state.numLikes} Likes
-				</button>
-			</div>
-		);
-	}
+    constructor(props) {
+        super(props);
+        this.state = { numLikes: 0 };
+    }
+    render() {
+        return (
+            <div>
+                <button onClick={() => this.setState({ numLikes: this.state.numLikes+1 })}>
+                    {this.state.numLikes} Likes
+                </button>
+            </div>
+        );
+    }
 }
 
 ReactDOM.render(<Button />, document.getElementById('app'));
@@ -64,30 +64,30 @@ import ReactDOM from 'react-dom';
 import { Store } from 'au-flux'; // Import the store builder
 
 class Button extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = { numLikes: 0 };
-	}
-	render() {
-		return (
-			<div>
-				<button onClick={() => this.setState({ numLikes: this.state.numLikes+1 })}>
-					{this.state.numLikes} Likes
-				</button>
-			</div>
-		);
-	}
+    constructor(props) {
+        super(props);
+        this.state = { numLikes: 0 };
+    }
+    render() {
+        return (
+            <div>
+                <button onClick={() => this.setState({ numLikes: this.state.numLikes+1 })}>
+                    {this.state.numLikes} Likes
+                </button>
+            </div>
+        );
+    }
 }
 
 // Create a new store that will respond to the 'add_like' action
 const LikeCount = Store.build({
-	add_like: {
-		// Tell the store what should happen when the action is received
-		run(resolve, reject, action) {
-			// Resolve the new value of the store.
-			resolve(this.value() + 1);
-		}
-	}
+    add_like: {
+        // Tell the store what should happen when the action is received
+        run(resolve, reject, action) {
+            // Resolve the new value of the store.
+            resolve(this.value() + 1);
+        }
+    }
 });
 
 // Instantiate the store that we defined above and set it's initial value to 0.
@@ -106,27 +106,27 @@ import ReactDOM from 'react-dom';
 import { Store, globals } from 'au-flux'; // Import au-flux globals
 
 class Button extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = { numLikes: 0 };
-	}
-	render() {
-		return (
-			<div>
-				<button onClick={() => this.setState({ numLikes: this.state.numLikes+1 })}>
-					{this.state.numLikes} Likes
-				</button>
-			</div>
-		);
-	}
+    constructor(props) {
+        super(props);
+        this.state = { numLikes: 0 };
+    }
+    render() {
+        return (
+            <div>
+                <button onClick={() => this.setState({ numLikes: this.state.numLikes+1 })}>
+                    {this.state.numLikes} Likes
+                </button>
+            </div>
+        );
+    }
 }
 
 const LikeCount = Store.build({
-	add_like: {
-		run(resolve, reject, action) {
-			resolve(this.value() + 1);
-		}
-	}
+    add_like: {
+        run(resolve, reject, action) {
+            resolve(this.value() + 1);
+        }
+    }
 });
 
 const likeCount = new LikeCount(0);
@@ -134,7 +134,7 @@ const likeCount = new LikeCount(0);
 // Create a list of all of the stores that our app is using. If we had multiple stores in our app we
 // would list all of them here
 const stores = {
-	likeCount
+    likeCount
 }
 
 // Notify au-flux about those stores so that they can be used
@@ -155,35 +155,35 @@ import ReactDOM from 'react-dom';
 import { Store, globals, SmartComponent, d } from 'au-flux'; 
 
 class Button extends React.Component {
-	render() {
-		// Use props instead of state. The props are passed from the SmartButton.
-		// d.trigger dispatches a new action when the button is clicked.
-		return (
-			<div>
-				<button onClick={() => d.trigger('add_like')}>
-					{this.props.likeCount} Likes
-				</button>
-			</div>
-		);
-	}
+    render() {
+        // Use props instead of state. The props are passed from the SmartButton.
+        // d.trigger dispatches a new action when the button is clicked.
+        return (
+            <div>
+                <button onClick={() => d.trigger('add_like')}>
+                    {this.props.likeCount} Likes
+                </button>
+            </div>
+        );
+    }
 }
 
 // This creates a wrapper component that passes the store to the Button component via props.
 const SmartButton = SmartComponent.build(Button, 'likeCount');
 
 const LikeCount = Store.build({
-	add_like: {
-		run(resolve, reject, action) {
-			console.log('add_like', this.value() + 1);
-			resolve(this.value() + 1);
-		}
-	}
+    add_like: {
+        run(resolve, reject, action) {
+            console.log('add_like', this.value() + 1);
+            resolve(this.value() + 1);
+        }
+    }
 });
 
 const likeCount = new LikeCount(0);
 
 const stores = {
-	likeCount
+    likeCount
 };
 
 globals.set('stores', stores);
