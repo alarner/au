@@ -5,7 +5,7 @@ import ids from './ids';
 export default {
 	build(Component, ...stores) {
 		const allStores = globals.get('stores');
-		return class SmartComponent extends React.Component {
+		class SmartComponent extends React.Component {
 			constructor(props) {
 				super(props);
 				this.state = {};
@@ -42,5 +42,6 @@ export default {
 				);
 			}
 		};
+		return SmartComponent;
 	}
 };
