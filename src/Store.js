@@ -76,15 +76,17 @@ const build2 = (actions, dispatcher) => {
 				actions[action].run.call(this, resolve, reject, data);
 			});
 			return p.then((result) => {
-				_history.push({
-					action: historyAction,
-					state: {
-						value: result,
-						error: null
-					}
-				});
-				this.change(action);
-				_undoHistory = [];
+				if(result !== this.value()) {
+					_history.push({
+						action: historyAction,
+						state: {
+							value: result,
+							error: null
+						}
+					});
+					this.change(action);
+					_undoHistory = [];
+				}
 			})
 			.catch((error) => {
 				let recoverable = false;
@@ -134,6 +136,18 @@ const build2 = (actions, dispatcher) => {
 
 		value() {
 			return this.state() ? this.state().value : undefined;
+		}
+
+		setValue(newValue, newError, action) {
+			action = action || 'setValue';
+			_history.push({
+				action,
+				state: {
+					value: newValue,
+					error: newError
+				}
+			});
+			this.change(action);
 		}
 
 		loading() {
