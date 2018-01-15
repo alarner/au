@@ -1,6 +1,6 @@
 {
   "name": "au-flux",
-  "version": "3.2.4",
+  "version": "3.2.5",
   "description": "A front-end framework designed to be flux-like? without the silly boilerplate.",
   "main": "src/index.js",
   "scripts": {
