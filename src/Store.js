@@ -155,7 +155,10 @@ const build2 = (actions, dispatcher) => {
 		}
 
 		setLoading(value) {
-			_loading = value;
+			if(_loading !== value) {
+				_loading = value;
+				this.change('setLoading');
+			}
 		}
 
 		error() {
