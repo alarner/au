@@ -154,6 +154,10 @@ const build2 = (actions, dispatcher) => {
 			return _loading;
 		}
 
+		setLoading(value) {
+			_loading = value;
+		}
+
 		error() {
 			return this.state() ? this.state().error : undefined;
 		}
