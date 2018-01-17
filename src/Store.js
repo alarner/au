@@ -1,6 +1,12 @@
 import ids from './ids';
 import globals from './globals';
 import { StoreError } from './error';
+
+function isFunction(functionToCheck) {
+	var getType = {};
+	return functionToCheck && getType.toString.call(functionToCheck) === '[object Function]';
+}
+
 const build2 = (actions, dispatcher) => {
 	const _dispatcher = dispatcher || globals.get('defaultDispatcher');
 	const _id = ids.nextStoreId();
@@ -65,17 +71,21 @@ const build2 = (actions, dispatcher) => {
 					message: `Store "${this.key()}" does not have an action "${action}"`
 				}));
 			}
-			if(!actions[action].run) {
+			let run = null;
+			if(isFunction(actions[action])) {
+				run = actions[action];
+			}
+			else if(actions[action].run && isFunction(actions[action].run)) {
+				run = actions[action].run;
+			}
+			if(!run) {
 				const message = (
 					`Store "${this.key()}" does not have a run method for action "${action}"`
 				);
 				return Promise.reject(new StoreError({ message, recoverable: false }));
 			}
 			const historyAction = { name: action, data };
-			const p = new Promise((resolve, reject) => {
-				actions[action].run.call(this, resolve, reject, data);
-			});
-			return p.then((result) => {
+			return run.call(this, data).then((result) => {
 				if(result !== this.value()) {
 					_history.push({
 						action: historyAction,
@@ -90,7 +100,7 @@ const build2 = (actions, dispatcher) => {
 			})
 			.catch((error) => {
 				let recoverable = false;
-				if(error instanceof StoreError) {
+				if(error.name === 'StoreError') {
 					recoverable = error.recoverable;
 				}
 				else if(error.message && !(error instanceof Error)) {

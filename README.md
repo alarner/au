@@ -83,12 +83,10 @@ class Button extends React.Component {
 
 // Create a new store that will respond to the 'add_like' action
 const LikeCount = Store.build({
-    add_like: {
-        // Tell the store what should happen when the action is received
-        run(resolve, reject, action) {
-            // Resolve the new value of the store.
-            resolve(this.value() + 1);
-        }
+    // Tell the store what should happen when the action is received
+    async add_like(action) {
+        // Resolve the new value of the store.
+        return this.value() + 1;
     }
 });
 
@@ -96,7 +94,7 @@ const LikeCount = Store.build({
 const likeCount = new LikeCount(0);
 ```
 
-Each AU Flux store is created using `Store.build(...)` and passed an object. The property names of that object represent actions that may occur in your app (in this case "add_like"). The value of each property should be another object with a `run` method. The run method always takes three arguments `resolve`, `reject`, and `action`. Resolve and reject are functions that can be called to update the value of the store (just like a promise). Either `resolve` or `reject` should always be called within your store depending on whether or not an error occurred. `action` will contain any data associated with the action being processed. In this case we are just grabbing the current value of the store and adding one to it.
+Each AU Flux store is created using `Store.build(...)` and passed an object. The property names of that object represent actions that may occur in your app (in this case "add_like"). The value of each property should be an async function to handle the action (or an object with an async `run` method to handle the action). The handler always takes one `action` argument and should return the new state of the store or throw an error. In this case we are just grabbing the current value of the store and adding one to it.
 
 ## Connecting the pieces
 
@@ -124,10 +122,8 @@ class Button extends React.Component {
 }
 
 const LikeCount = Store.build({
-    add_like: {
-        run(resolve, reject, action) {
-            resolve(this.value() + 1);
-        }
+    add_like(action) {
+        return this.value() + 1;
     }
 });
 
@@ -174,11 +170,9 @@ class Button extends React.Component {
 const SmartButton = SmartComponent.build(Button, 'likeCount');
 
 const LikeCount = Store.build({
-    add_like: {
-        run(resolve, reject, action) {
-            console.log('add_like', this.value() + 1);
-            resolve(this.value() + 1);
-        }
+    add_like(action) {
+        console.log('add_like', this.value() + 1);
+        return this.value() + 1;
     }
 });
 
