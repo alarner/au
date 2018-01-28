@@ -35,7 +35,7 @@ export default function Dispatcher() {
 		}
 	};
 
-	this.handleAction = function(action, data) {
+	this.handleAction = function(action, data = {}) {
 		return new Promise((resolve, reject) => {
 			if(!storeActionHandlers.hasOwnProperty(action)) {
 				return resolve();
