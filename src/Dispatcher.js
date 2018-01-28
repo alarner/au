@@ -1,7 +1,7 @@
 import auto from 'async.auto';
 import { StoreError } from './error';
 
-module.exports = function Dispatcher() {
+export default function Dispatcher() {
 	const storeActionHandlers = {};
 	const actionQueue = [];
 	let currentAction = undefined;
