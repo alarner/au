@@ -1,1 +1,1342 @@
-!function(t,e){"object"==typeof exports&&"object"==typeof module?module.exports=e(require("react")):"function"==typeof define&&define.amd?define(["react"],e):"object"==typeof exports?exports["au-flux"]=e(require("react")):t["au-flux"]=e(t.React)}(this,function(t){return function(t){function e(r){if(n[r])return n[r].exports;var o=n[r]={i:r,l:!1,exports:{}};return t[r].call(o.exports,o,o.exports,e),o.l=!0,o.exports}var n={};return e.m=t,e.c=n,e.d=function(t,n,r){e.o(t,n)||Object.defineProperty(t,n,{configurable:!1,enumerable:!0,get:r})},e.n=function(t){var n=t&&t.__esModule?function(){return t.default}:function(){return t};return e.d(n,"a",n),n},e.o=function(t,e){return Object.prototype.hasOwnProperty.call(t,e)},e.p="",e(e.s=7)}([function(t,e,n){"use strict";t.exports=function(t,e){for(var n=-1,r=t.length;++n<r;)e(t[n],n,t)}},function(t,e,n){"use strict";var r=n(5),o=n.n(r);class i extends Error{constructor({message:t,key:e,recoverable:n}){super(t),this.key=e||"default",this.recoverable=n||void 0===n,this.name="StoreError"}}const s=(t,e,n)=>t&&t.key===e?o.a.createElement(n,{error:t}):null,c=i;e.a=c;e.b={StoreError:i,renderError:s}},function(t,e,n){"use strict";var r=n(3);class o{constructor(){this.globals={stores:{},defaultDispatcher:new r.a}}set(t,e){"stores"===t?this.initializeStores(e):this.globals[t]=e}get(t){return this.globals[t]}initializeStores(t){for(const e in t)t[e].setKey(e),this.globals.stores[e]=t[e]}}e.a=new o},function(t,e,n){"use strict";e.a=function(){const t={},e=[];let n=void 0;const r={};this.on=function(e,n,o){if(!e||!e.isStore)throw new Error("First argument must be a Store");if("string"!=typeof n)throw new Error('Second argument "action" must be a string');o=o||[],t.hasOwnProperty(n)||(t[n]={}),t[n][e.id()]={dependencies:o,store:e},r[n]||(r[n]=[]);const i=r[n].find(t=>t.store===e);i?i.dependencies=o:r[n].push({store:e,dependencies:o})},this.handleAction=function(e,n={}){return new Promise((r,s)=>{if(!t.hasOwnProperty(e))return r();const c={};for(const r in t[e]){const{dependencies:o,store:s}=t[e][r];c[s.key()]=o.slice(0),c[s.key()].push(t=>{s.handleAction(e,n).then(()=>t()).catch(e=>{let n=!1;e instanceof i.a&&(n=e.recoverable),n?t(null,e):t(e)})})}o()(c,(t,e)=>{t?s(t):r(e)})})},this.trigger=function(t,r={},o=!0){return o?new Promise((o,i)=>{e.push({action:t,data:r,resolve:o,reject:i}),n||s()}):this.handleAction(t,r)};const s=function(){(n=e.shift())&&c(n)},c=({action:t,data:e,resolve:n,reject:r})=>{this.handleAction(t,e).then(t=>{n(t),s()}).catch(t=>{r(t),s()})}};var r=n(8),o=n.n(r),i=n(1)},function(t,e,n){"use strict";t.exports=Object.keys||function(t){var e=[];for(var n in t)t.hasOwnProperty(n)&&e.push(n);return e}},function(e,n){e.exports=t},function(t,e,n){"use strict";class r{constructor(){this.storeId=1,this.componentId=1}nextStoreId(){return this.storeId++}nextComponentId(){return this.componentId++}}e.a=new r},function(t,e,n){"use strict";Object.defineProperty(e,"__esModule",{value:!0});var r=n(3),o=n(2),i=n(21),s=n(22),c=n(1);const a=o.a.get("defaultDispatcher");e.d=a;const u=r.a;e.Dispatcher=u;const l=o.a;e.globals=l;const f=c.b.renderError;e.renderError=f;const h=i.a;e.SmartComponent=h;const d=s.a;e.Store=d;const p=c.b.StoreError;e.StoreError=p},function(t,e,n){"use strict";var r=n(9),o=n(10),i=n(4),s=n(11),c=n(12),a=n(13),u=n(0),l=n(14),f=n(15),h=n(16);t.exports=function(t,e,n){function d(t){w.unshift(t)}function p(){g--,u(w.slice(0),function(t){t()})}"function"==typeof arguments[1]&&(n=e,e=null),n=r(n||o);var m=i(t),g=m.length;if(!g)return n(null);e||(e=g);var v={},y=0,w=[];d(function(){g||n(null,v)}),u(m,function(r){function o(){return y<e&&s(b,function(t,e){return t&&v.hasOwnProperty(e)},!0)&&!v.hasOwnProperty(r)}function i(){o()&&(y++,function(t){var e=c(w,t);e>=0&&w.splice(e,1)}(i),m[m.length-1](g,v))}for(var u,m=a(t[r])?t[r]:[t[r]],g=l(function(t,e){if(y--,e.length<=1&&(e=e[0]),t){var o={};f(v,function(t,e){o[e]=t}),o[r]=e,n(t,o)}else v[r]=e,h(p)}),b=m.slice(0,m.length-1),T=b.length;T--;){if(!(u=t[b[T]]))throw new Error("Has inexistant dependency");if(a(u)&&c(u,r)>=0)throw new Error("Has cyclic dependencies")}o()?(y++,m[m.length-1](g,v)):d(i)})}},function(t,e,n){"use strict";t.exports=function(t){return function(){null!==t&&(t.apply(this,arguments),t=null)}}},function(t,e,n){"use strict";t.exports=function(){}},function(t,e,n){"use strict";var r=n(0);t.exports=function(t,e,n){return r(t,function(t,r,o){n=e(n,t,r,o)}),n}},function(t,e,n){"use strict";t.exports=function(t,e){for(var n=0;n<t.length;n++)if(t[n]===e)return n;return-1}},function(t,e,n){"use strict";t.exports=Array.isArray||function(t){return"[object Array]"===Object.prototype.toString.call(t)}},function(t,e,n){"use strict";t.exports=function(t,e){return e=null==e?t.length-1:+e,function(){for(var n=Math.max(arguments.length-e,0),r=new Array(n),o=0;o<n;o++)r[o]=arguments[o+e];switch(e){case 0:return t.call(this,r);case 1:return t.call(this,arguments[0],r)}}}},function(t,e,n){"use strict";var r=n(4),o=n(0);t.exports=function(t,e){o(r(t),function(n){e(t[n],n)})}},function(t,e,n){"use strict";(function(e){var n="function"==typeof e&&e;t.exports=function(t){return(n||function(t){setTimeout(t,0)})(t)}}).call(e,n(17).setImmediate)},function(t,e,n){function r(t,e){this._id=t,this._clearFn=e}var o=Function.prototype.apply;e.setTimeout=function(){return new r(o.call(setTimeout,window,arguments),clearTimeout)},e.setInterval=function(){return new r(o.call(setInterval,window,arguments),clearInterval)},e.clearTimeout=e.clearInterval=function(t){t&&t.close()},r.prototype.unref=r.prototype.ref=function(){},r.prototype.close=function(){this._clearFn.call(window,this._id)},e.enroll=function(t,e){clearTimeout(t._idleTimeoutId),t._idleTimeout=e},e.unenroll=function(t){clearTimeout(t._idleTimeoutId),t._idleTimeout=-1},e._unrefActive=e.active=function(t){clearTimeout(t._idleTimeoutId);var e=t._idleTimeout;e>=0&&(t._idleTimeoutId=setTimeout(function(){t._onTimeout&&t._onTimeout()},e))},n(18),e.setImmediate=setImmediate,e.clearImmediate=clearImmediate},function(t,e,n){(function(t,e){!function(t,n){"use strict";function r(t){delete c[t]}function o(t){if(a)setTimeout(o,0,t);else{var e=c[t];if(e){a=!0;try{!function(t){var e=t.callback,r=t.args;switch(r.length){case 0:e();break;case 1:e(r[0]);break;case 2:e(r[0],r[1]);break;case 3:e(r[0],r[1],r[2]);break;default:e.apply(n,r)}}(e)}finally{r(t),a=!1}}}}if(!t.setImmediate){var i,s=1,c={},a=!1,u=t.document,l=Object.getPrototypeOf&&Object.getPrototypeOf(t);l=l&&l.setTimeout?l:t,"[object process]"==={}.toString.call(t.process)?i=function(t){e.nextTick(function(){o(t)})}:function(){if(t.postMessage&&!t.importScripts){var e=!0,n=t.onmessage;return t.onmessage=function(){e=!1},t.postMessage("","*"),t.onmessage=n,e}}()?function(){var e="setImmediate$"+Math.random()+"$",n=function(n){n.source===t&&"string"==typeof n.data&&0===n.data.indexOf(e)&&o(+n.data.slice(e.length))};t.addEventListener?t.addEventListener("message",n,!1):t.attachEvent("onmessage",n),i=function(n){t.postMessage(e+n,"*")}}():t.MessageChannel?function(){var t=new MessageChannel;t.port1.onmessage=function(t){o(t.data)},i=function(e){t.port2.postMessage(e)}}():u&&"onreadystatechange"in u.createElement("script")?function(){var t=u.documentElement;i=function(e){var n=u.createElement("script");n.onreadystatechange=function(){o(e),n.onreadystatechange=null,t.removeChild(n),n=null},t.appendChild(n)}}():i=function(t){setTimeout(o,0,t)},l.setImmediate=function(t){"function"!=typeof t&&(t=new Function(""+t));for(var e=new Array(arguments.length-1),n=0;n<e.length;n++)e[n]=arguments[n+1];var r={callback:t,args:e};return c[s]=r,i(s),s++},l.clearImmediate=r}}("undefined"==typeof self?void 0===t?this:t:self)}).call(e,n(19),n(20))},function(t,e){var n;n=function(){return this}();try{n=n||Function("return this")()||(0,eval)("this")}catch(t){"object"==typeof window&&(n=window)}t.exports=n},function(t,e){function n(){throw new Error("setTimeout has not been defined")}function r(){throw new Error("clearTimeout has not been defined")}function o(t){if(u===setTimeout)return setTimeout(t,0);if((u===n||!u)&&setTimeout)return u=setTimeout,setTimeout(t,0);try{return u(t,0)}catch(e){try{return u.call(null,t,0)}catch(e){return u.call(this,t,0)}}}function i(){p&&h&&(p=!1,h.length?d=h.concat(d):m=-1,d.length&&s())}function s(){if(!p){var t=o(i);p=!0;for(var e=d.length;e;){for(h=d,d=[];++m<e;)h&&h[m].run();m=-1,e=d.length}h=null,p=!1,function(t){if(l===clearTimeout)return clearTimeout(t);if((l===r||!l)&&clearTimeout)return l=clearTimeout,clearTimeout(t);try{l(t)}catch(e){try{return l.call(null,t)}catch(e){return l.call(this,t)}}}(t)}}function c(t,e){this.fun=t,this.array=e}function a(){}var u,l,f=t.exports={};!function(){try{u="function"==typeof setTimeout?setTimeout:n}catch(t){u=n}try{l="function"==typeof clearTimeout?clearTimeout:r}catch(t){l=r}}();var h,d=[],p=!1,m=-1;f.nextTick=function(t){var e=new Array(arguments.length-1);if(arguments.length>1)for(var n=1;n<arguments.length;n++)e[n-1]=arguments[n];d.push(new c(t,e)),1!==d.length||p||o(s)},c.prototype.run=function(){this.fun.apply(null,this.array)},f.title="browser",f.browser=!0,f.env={},f.argv=[],f.version="",f.versions={},f.on=a,f.addListener=a,f.once=a,f.off=a,f.removeListener=a,f.removeAllListeners=a,f.emit=a,f.prependListener=a,f.prependOnceListener=a,f.listeners=function(t){return[]},f.binding=function(t){throw new Error("process.binding is not supported")},f.cwd=function(){return"/"},f.chdir=function(t){throw new Error("process.chdir is not supported")},f.umask=function(){return 0}},function(t,e,n){"use strict";var r=n(5),o=n.n(r),i=n(2),s=n(6),c=Object.assign||function(t){for(var e=1;e<arguments.length;e++){var n=arguments[e];for(var r in n)Object.prototype.hasOwnProperty.call(n,r)&&(t[r]=n[r])}return t};e.a={build(t,...e){const n=i.a.get("stores");class r extends o.a.Component{constructor(t){super(t),this.state={},this.key=s.a.nextComponentId();for(const t of e)n[t].connectToState(this.key,this.setState.bind(this)),this.state[t]=n[t].all()}componentWillUnmount(){for(const t of e)n[t].ignore(this.key)}render(){const e={},n={},r={};for(const t in this.state)e[t]=this.state[t].error,n[t]=this.state[t].loading,r[t]=this.state[t].value;return o.a.createElement(t,c({errors:e,loading:n},r,this.props))}}return r}}},function(t,e,n){"use strict";function r(t){return t&&"[object Function]"==={}.toString.call(t)}var o=n(6),i=n(2),s=n(1);const c=(t,e)=>{const n=e||i.a.get("defaultDispatcher"),c=o.a.nextStoreId(),a=[];let u=[],l=!1,f=null;class h{constructor(e){this._componentListeners={},a.push({action:null,state:{value:e,error:null}}),this.isStore=!0;for(const e in t)n.on(this,e,t[e].dependencies||[])}listen(t,e){if(this._componentListeners.hasOwnProperty(t))throw new Error(`component (key=${t}) is already listening to the store `+`(id=${c}, key=${f})`);this._componentListeners[t]=e}connectToState(t,e){return this.listen(t,(t,n)=>{const r={};r[this.key()||this.id()]=this.all(),e(r,t)}),this.all()}ignore(t){this._componentListeners.hasOwnProperty(t)&&delete this._componentListeners[t]}handleAction(e,n){if(!t[e])return Promise.reject(new s.a({message:`Store "${this.key()}" does not have an action "${e}"`}));let o=null;if(r(t[e])?o=t[e]:t[e].run&&r(t[e].run)&&(o=t[e].run),!o){const t=`Store "${this.key()}" does not have a run method for action "${e}"`;return Promise.reject(new s.a({message:t,recoverable:!1}))}const i={name:e,data:n};return o.call(this,n).then(t=>{t!==this.value()&&(a.push({action:i,state:{value:t,error:null}}),this.change(e),u=[])}).catch(t=>{let n=!1;"StoreError"===t.name?n=t.recoverable:!t.message||t instanceof Error||(n=(t=new s.a(t)).recoverable);const r=this.state();if(a.push({action:i,state:{value:r.value,error:t}}),this.change(e),!n)throw t;u=[]})}change(t){const e=Object.keys(this._componentListeners);return Promise.all(e.map(e=>new Promise((n,r)=>this._componentListeners[e].call(this,n,r,{action:t}))))}state(){return a.length?a[a.length-1].state:void 0}value(){return this.state()?this.state().value:void 0}setValue(t,e,n){n=n||"setValue",a.push({action:n,state:{value:t,error:e}}),this.change(n)}loading(){return l}setLoading(t){l!==t&&(l=t,this.change("setLoading"))}error(){return this.state()?this.state().error:void 0}all(){return{value:this.value(),loading:this.loading(),error:this.error()}}setKey(t){f=t}key(){return f}id(){return c}history(){return a}undo(){a.length<=1||(u.push(a.pop()),this.change("undo"))}redo(){u.length<1||(a.push(u.pop()),this.change("redo"))}}return h};e.a={build:c}}])});
+(function webpackUniversalModuleDefinition(root, factory) {
+	if(typeof exports === 'object' && typeof module === 'object')
+		module.exports = factory(require("react"));
+	else if(typeof define === 'function' && define.amd)
+		define(["react"], factory);
+	else if(typeof exports === 'object')
+		exports["au-flux"] = factory(require("react"));
+	else
+		root["au-flux"] = factory(root["React"]);
+})(this, function(__WEBPACK_EXTERNAL_MODULE_5__) {
+return /******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+/******/
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId]) {
+/******/ 			return installedModules[moduleId].exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			i: moduleId,
+/******/ 			l: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/
+/******/ 		// Flag the module as loaded
+/******/ 		module.l = true;
+/******/
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/
+/******/
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+/******/
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+/******/
+/******/ 	// define getter function for harmony exports
+/******/ 	__webpack_require__.d = function(exports, name, getter) {
+/******/ 		if(!__webpack_require__.o(exports, name)) {
+/******/ 			Object.defineProperty(exports, name, {
+/******/ 				configurable: false,
+/******/ 				enumerable: true,
+/******/ 				get: getter
+/******/ 			});
+/******/ 		}
+/******/ 	};
+/******/
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = function(module) {
+/******/ 		var getter = module && module.__esModule ?
+/******/ 			function getDefault() { return module['default']; } :
+/******/ 			function getModuleExports() { return module; };
+/******/ 		__webpack_require__.d(getter, 'a', getter);
+/******/ 		return getter;
+/******/ 	};
+/******/
+/******/ 	// Object.prototype.hasOwnProperty.call
+/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
+/******/
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+/******/
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(__webpack_require__.s = 7);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = function arrayEach(arr, iterator) {
+    var index = -1;
+    var length = arr.length;
+
+    while (++index < length) {
+        iterator(arr[index], index, arr);
+    }
+};
+
+
+/***/ }),
+/* 1 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
+
+
+class StoreError2 extends Error {
+	constructor({ message, key, recoverable }) {
+		super(message);
+		this.key = key || 'default';
+		this.recoverable = recoverable || recoverable === undefined;
+		this.name = 'StoreError';
+	}
+}
+
+const renderError2 = (error, key, ErrorComponent) => {
+	return error && error.key === key ? __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(ErrorComponent, { error: error }) : null;
+};
+
+const StoreError = StoreError2;
+/* harmony export (immutable) */ __webpack_exports__["a"] = StoreError;
+
+const renderError = renderError2;
+/* unused harmony export renderError */
+
+/* harmony default export */ __webpack_exports__["b"] = ({
+	StoreError: StoreError2,
+	renderError: renderError2
+});
+
+/***/ }),
+/* 2 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Dispatcher__ = __webpack_require__(3);
+
+class Globals {
+	constructor() {
+		this.globals = {
+			stores: {},
+			defaultDispatcher: new __WEBPACK_IMPORTED_MODULE_0__Dispatcher__["a" /* default */]()
+		};
+	}
+
+	set(key, value) {
+		// @todo validation
+
+		if (key === 'stores') {
+			this.initializeStores(value);
+		} else {
+			this.globals[key] = value;
+		}
+	}
+
+	get(key) {
+		return this.globals[key];
+	}
+
+	initializeStores(stores) {
+		for (const key in stores) {
+			stores[key].setKey(key);
+			this.globals.stores[key] = stores[key];
+		}
+	}
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (new Globals());
+
+/***/ }),
+/* 3 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (immutable) */ __webpack_exports__["a"] = Dispatcher;
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_async_auto__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_async_auto___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_async_auto__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__error__ = __webpack_require__(1);
+
+
+
+function Dispatcher() {
+	const storeActionHandlers = {};
+	const actionQueue = [];
+	let currentAction = undefined;
+	const actionHandlers = {};
+
+	this.on = function (store, action, dependencies) {
+		if (!store || !store.isStore) {
+			throw new Error('First argument must be a Store');
+		}
+		if (typeof action !== 'string') {
+			throw new Error('Second argument "action" must be a string');
+		}
+		dependencies = dependencies || [];
+		if (!storeActionHandlers.hasOwnProperty(action)) {
+			storeActionHandlers[action] = {};
+		}
+		storeActionHandlers[action][store.id()] = {
+			dependencies,
+			store
+		};
+
+		if (!actionHandlers[action]) {
+			actionHandlers[action] = [];
+		}
+		const existingHandler = actionHandlers[action].find(h => h.store === store);
+		if (existingHandler) {
+			existingHandler.dependencies = dependencies;
+		} else {
+			actionHandlers[action].push({ store, dependencies });
+		}
+	};
+
+	this.handleAction = function (action, data = {}) {
+		return new Promise((resolve, reject) => {
+			if (!storeActionHandlers.hasOwnProperty(action)) {
+				return resolve();
+			}
+			const autoObj = {};
+			for (const storeId in storeActionHandlers[action]) {
+				const { dependencies, store } = storeActionHandlers[action][storeId];
+				autoObj[store.key()] = dependencies.slice(0);
+				autoObj[store.key()].push(cb => {
+					store.handleAction(action, data).then(() => cb()).catch(error => {
+						let recoverable = false;
+						if (error instanceof __WEBPACK_IMPORTED_MODULE_1__error__["a" /* StoreError */]) {
+							recoverable = error.recoverable;
+						}
+						if (recoverable) {
+							cb(null, error);
+						} else {
+							cb(error);
+						}
+					});
+				});
+			}
+
+			__WEBPACK_IMPORTED_MODULE_0_async_auto___default()(autoObj, (error, results) => {
+				if (error) {
+					reject(error);
+				} else {
+					resolve(results);
+				}
+			});
+		});
+	};
+
+	this.trigger = function (action, data = {}, queue = true) {
+		if (!queue) {
+			return this.handleAction(action, data);
+		}
+		return new Promise((resolve, reject) => {
+			actionQueue.push({
+				action,
+				data,
+				resolve: resolve,
+				reject: reject
+			});
+			if (!currentAction) {
+				next();
+			}
+		});
+	};
+
+	const next = function () {
+		currentAction = actionQueue.shift();
+		if (currentAction) {
+			processAction(currentAction);
+		}
+	};
+
+	const processAction = ({ action, data, resolve, reject }) => {
+		this.handleAction(action, data).then(data => {
+			resolve(data);
+			next();
+		}).catch(err => {
+			reject(err);
+			next();
+		});
+	};
+};
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = Object.keys || function keys(obj) {
+    var _keys = [];
+    for (var k in obj) {
+        if (obj.hasOwnProperty(k)) {
+            _keys.push(k);
+        }
+    }
+    return _keys;
+};
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE_5__;
+
+/***/ }),
+/* 6 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+class IdGenerator {
+	constructor() {
+		this.storeId = 1;
+		this.componentId = 1;
+	}
+
+	nextStoreId() {
+		return this.storeId++;
+	}
+
+	nextComponentId() {
+		return this.componentId++;
+	}
+}
+/* harmony default export */ __webpack_exports__["a"] = (new IdGenerator());
+
+/***/ }),
+/* 7 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Dispatcher__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__globals__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__SmartComponent__ = __webpack_require__(21);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Store__ = __webpack_require__(22);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__error__ = __webpack_require__(1);
+
+
+
+
+
+
+const d = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* default */].get('defaultDispatcher');
+/* harmony export (immutable) */ __webpack_exports__["d"] = d;
+
+const Dispatcher = __WEBPACK_IMPORTED_MODULE_0__Dispatcher__["a" /* default */];
+/* harmony export (immutable) */ __webpack_exports__["Dispatcher"] = Dispatcher;
+
+const globals = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* default */];
+/* harmony export (immutable) */ __webpack_exports__["globals"] = globals;
+
+const renderError = __WEBPACK_IMPORTED_MODULE_4__error__["b" /* default */].renderError;
+/* harmony export (immutable) */ __webpack_exports__["renderError"] = renderError;
+
+const SmartComponent = __WEBPACK_IMPORTED_MODULE_2__SmartComponent__["a" /* default */];
+/* harmony export (immutable) */ __webpack_exports__["SmartComponent"] = SmartComponent;
+
+const Store = __WEBPACK_IMPORTED_MODULE_3__Store__["a" /* default */];
+/* harmony export (immutable) */ __webpack_exports__["Store"] = Store;
+
+const StoreError = __WEBPACK_IMPORTED_MODULE_4__error__["b" /* default */].StoreError;
+/* harmony export (immutable) */ __webpack_exports__["StoreError"] = StoreError;
+
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var once = __webpack_require__(9);
+var noop = __webpack_require__(10);
+var _keys = __webpack_require__(4);
+var reduce = __webpack_require__(11);
+var indexOf = __webpack_require__(12);
+var isArray = __webpack_require__(13);
+var arrayEach = __webpack_require__(0);
+var restParam = __webpack_require__(14);
+var forEachOf = __webpack_require__(15);
+var setImmediate = __webpack_require__(16);
+
+module.exports = function auto(tasks, concurrency, cb) {
+    if (typeof arguments[1] === 'function') {
+        // concurrency is optional, shift the args.
+        cb = concurrency;
+        concurrency = null;
+    }
+    cb = once(cb || noop);
+    var keys = _keys(tasks);
+    var remainingTasks = keys.length;
+    if (!remainingTasks) {
+        return cb(null);
+    }
+    if (!concurrency) {
+        concurrency = remainingTasks;
+    }
+
+    var results = {};
+    var runningTasks = 0;
+
+    var listeners = [];
+
+    function addListener(fn) {
+        listeners.unshift(fn);
+    }
+
+    function removeListener(fn) {
+        var idx = indexOf(listeners, fn);
+        if (idx >= 0) listeners.splice(idx, 1);
+    }
+
+    function taskComplete() {
+        remainingTasks--;
+        arrayEach(listeners.slice(0), function(fn) {
+            fn();
+        });
+    }
+
+    addListener(function() {
+        if (!remainingTasks) {
+            cb(null, results);
+        }
+    });
+
+    arrayEach(keys, function(k) {
+        var task = isArray(tasks[k]) ? tasks[k] : [tasks[k]];
+        var taskCallback = restParam(function(err, args) {
+            runningTasks--;
+            if (args.length <= 1) {
+                args = args[0];
+            }
+            if (err) {
+                var safeResults = {};
+                forEachOf(results, function(val, rkey) {
+                    safeResults[rkey] = val;
+                });
+                safeResults[k] = args;
+                cb(err, safeResults);
+            } else {
+                results[k] = args;
+                setImmediate(taskComplete);
+            }
+        });
+        var requires = task.slice(0, task.length - 1);
+        // prevent dead-locks
+        var len = requires.length;
+        var dep;
+        while (len--) {
+            if (!(dep = tasks[requires[len]])) {
+                throw new Error('Has inexistant dependency');
+            }
+            if (isArray(dep) && indexOf(dep, k) >= 0) {
+                throw new Error('Has cyclic dependencies');
+            }
+        }
+
+        function ready() {
+            return runningTasks < concurrency && reduce(requires, function(a, x) {
+                return (a && results.hasOwnProperty(x));
+            }, true) && !results.hasOwnProperty(k);
+        }
+        if (ready()) {
+            runningTasks++;
+            task[task.length - 1](taskCallback, results);
+        } else {
+            addListener(listener);
+        }
+
+        function listener() {
+            if (ready()) {
+                runningTasks++;
+                removeListener(listener);
+                task[task.length - 1](taskCallback, results);
+            }
+        }
+    });
+};
+
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = function once(fn) {
+    return function() {
+        if (fn === null) return;
+        fn.apply(this, arguments);
+        fn = null;
+    };
+};
+
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = function noop () {};
+
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var arrayEach = __webpack_require__(0);
+
+module.exports = function reduce(arr, iterator, memo) {
+    arrayEach(arr, function(x, i, a) {
+        memo = iterator(memo, x, i, a);
+    });
+    return memo;
+};
+
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = function indexOf(arr, item) {
+    for (var i = 0; i < arr.length; i++) if (arr[i] === item) return i;
+    return -1;
+};
+
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = Array.isArray || function isArray(obj) {
+    return Object.prototype.toString.call(obj) === '[object Array]';
+};
+
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+module.exports = function restParam(func, startIndex) {
+    startIndex = startIndex == null ? func.length - 1 : +startIndex;
+    return function() {
+        var length = Math.max(arguments.length - startIndex, 0);
+        var rest = new Array(length);
+        for (var index = 0; index < length; index++) {
+            rest[index] = arguments[index + startIndex];
+        }
+        switch (startIndex) {
+            case 0:
+                return func.call(this, rest);
+            case 1:
+                return func.call(this, arguments[0], rest);
+        }
+    };
+};
+
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var keys = __webpack_require__(4);
+var arrayEach = __webpack_require__(0);
+
+module.exports = function forEachOf(object, iterator) {
+    arrayEach(keys(object), function(key) {
+        iterator(object[key], key);
+    });
+};
+
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(setImmediate) {
+
+var _setImmediate = typeof setImmediate === 'function' && setImmediate;
+var fallback = function(fn) {
+    setTimeout(fn, 0);
+};
+
+module.exports = function setImmediate(fn) {
+    // not a direct alias for IE10 compatibility
+    return (_setImmediate || fallback)(fn);
+};
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(17).setImmediate))
+
+/***/ }),
+/* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var apply = Function.prototype.apply;
+
+// DOM APIs, for completeness
+
+exports.setTimeout = function() {
+  return new Timeout(apply.call(setTimeout, window, arguments), clearTimeout);
+};
+exports.setInterval = function() {
+  return new Timeout(apply.call(setInterval, window, arguments), clearInterval);
+};
+exports.clearTimeout =
+exports.clearInterval = function(timeout) {
+  if (timeout) {
+    timeout.close();
+  }
+};
+
+function Timeout(id, clearFn) {
+  this._id = id;
+  this._clearFn = clearFn;
+}
+Timeout.prototype.unref = Timeout.prototype.ref = function() {};
+Timeout.prototype.close = function() {
+  this._clearFn.call(window, this._id);
+};
+
+// Does not start the time, just sets up the members needed.
+exports.enroll = function(item, msecs) {
+  clearTimeout(item._idleTimeoutId);
+  item._idleTimeout = msecs;
+};
+
+exports.unenroll = function(item) {
+  clearTimeout(item._idleTimeoutId);
+  item._idleTimeout = -1;
+};
+
+exports._unrefActive = exports.active = function(item) {
+  clearTimeout(item._idleTimeoutId);
+
+  var msecs = item._idleTimeout;
+  if (msecs >= 0) {
+    item._idleTimeoutId = setTimeout(function onTimeout() {
+      if (item._onTimeout)
+        item._onTimeout();
+    }, msecs);
+  }
+};
+
+// setimmediate attaches itself to the global object
+__webpack_require__(18);
+exports.setImmediate = setImmediate;
+exports.clearImmediate = clearImmediate;
+
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
+    "use strict";
+
+    if (global.setImmediate) {
+        return;
+    }
+
+    var nextHandle = 1; // Spec says greater than zero
+    var tasksByHandle = {};
+    var currentlyRunningATask = false;
+    var doc = global.document;
+    var registerImmediate;
+
+    function setImmediate(callback) {
+      // Callback can either be a function or a string
+      if (typeof callback !== "function") {
+        callback = new Function("" + callback);
+      }
+      // Copy function arguments
+      var args = new Array(arguments.length - 1);
+      for (var i = 0; i < args.length; i++) {
+          args[i] = arguments[i + 1];
+      }
+      // Store and register the task
+      var task = { callback: callback, args: args };
+      tasksByHandle[nextHandle] = task;
+      registerImmediate(nextHandle);
+      return nextHandle++;
+    }
+
+    function clearImmediate(handle) {
+        delete tasksByHandle[handle];
+    }
+
+    function run(task) {
+        var callback = task.callback;
+        var args = task.args;
+        switch (args.length) {
+        case 0:
+            callback();
+            break;
+        case 1:
+            callback(args[0]);
+            break;
+        case 2:
+            callback(args[0], args[1]);
+            break;
+        case 3:
+            callback(args[0], args[1], args[2]);
+            break;
+        default:
+            callback.apply(undefined, args);
+            break;
+        }
+    }
+
+    function runIfPresent(handle) {
+        // From the spec: "Wait until any invocations of this algorithm started before this one have completed."
+        // So if we're currently running a task, we'll need to delay this invocation.
+        if (currentlyRunningATask) {
+            // Delay by doing a setTimeout. setImmediate was tried instead, but in Firefox 7 it generated a
+            // "too much recursion" error.
+            setTimeout(runIfPresent, 0, handle);
+        } else {
+            var task = tasksByHandle[handle];
+            if (task) {
+                currentlyRunningATask = true;
+                try {
+                    run(task);
+                } finally {
+                    clearImmediate(handle);
+                    currentlyRunningATask = false;
+                }
+            }
+        }
+    }
+
+    function installNextTickImplementation() {
+        registerImmediate = function(handle) {
+            process.nextTick(function () { runIfPresent(handle); });
+        };
+    }
+
+    function canUsePostMessage() {
+        // The test against `importScripts` prevents this implementation from being installed inside a web worker,
+        // where `global.postMessage` means something completely different and can't be used for this purpose.
+        if (global.postMessage && !global.importScripts) {
+            var postMessageIsAsynchronous = true;
+            var oldOnMessage = global.onmessage;
+            global.onmessage = function() {
+                postMessageIsAsynchronous = false;
+            };
+            global.postMessage("", "*");
+            global.onmessage = oldOnMessage;
+            return postMessageIsAsynchronous;
+        }
+    }
+
+    function installPostMessageImplementation() {
+        // Installs an event handler on `global` for the `message` event: see
+        // * https://developer.mozilla.org/en/DOM/window.postMessage
+        // * http://www.whatwg.org/specs/web-apps/current-work/multipage/comms.html#crossDocumentMessages
+
+        var messagePrefix = "setImmediate$" + Math.random() + "$";
+        var onGlobalMessage = function(event) {
+            if (event.source === global &&
+                typeof event.data === "string" &&
+                event.data.indexOf(messagePrefix) === 0) {
+                runIfPresent(+event.data.slice(messagePrefix.length));
+            }
+        };
+
+        if (global.addEventListener) {
+            global.addEventListener("message", onGlobalMessage, false);
+        } else {
+            global.attachEvent("onmessage", onGlobalMessage);
+        }
+
+        registerImmediate = function(handle) {
+            global.postMessage(messagePrefix + handle, "*");
+        };
+    }
+
+    function installMessageChannelImplementation() {
+        var channel = new MessageChannel();
+        channel.port1.onmessage = function(event) {
+            var handle = event.data;
+            runIfPresent(handle);
+        };
+
+        registerImmediate = function(handle) {
+            channel.port2.postMessage(handle);
+        };
+    }
+
+    function installReadyStateChangeImplementation() {
+        var html = doc.documentElement;
+        registerImmediate = function(handle) {
+            // Create a <script> element; its readystatechange event will be fired asynchronously once it is inserted
+            // into the document. Do so, thus queuing up the task. Remember to clean up once it's been called.
+            var script = doc.createElement("script");
+            script.onreadystatechange = function () {
+                runIfPresent(handle);
+                script.onreadystatechange = null;
+                html.removeChild(script);
+                script = null;
+            };
+            html.appendChild(script);
+        };
+    }
+
+    function installSetTimeoutImplementation() {
+        registerImmediate = function(handle) {
+            setTimeout(runIfPresent, 0, handle);
+        };
+    }
+
+    // If supported, we should attach to the prototype of global, since that is where setTimeout et al. live.
+    var attachTo = Object.getPrototypeOf && Object.getPrototypeOf(global);
+    attachTo = attachTo && attachTo.setTimeout ? attachTo : global;
+
+    // Don't get fooled by e.g. browserify environments.
+    if ({}.toString.call(global.process) === "[object process]") {
+        // For Node.js before 0.9
+        installNextTickImplementation();
+
+    } else if (canUsePostMessage()) {
+        // For non-IE10 modern browsers
+        installPostMessageImplementation();
+
+    } else if (global.MessageChannel) {
+        // For web workers, where supported
+        installMessageChannelImplementation();
+
+    } else if (doc && "onreadystatechange" in doc.createElement("script")) {
+        // For IE 6–8
+        installReadyStateChangeImplementation();
+
+    } else {
+        // For older browsers
+        installSetTimeoutImplementation();
+    }
+
+    attachTo.setImmediate = setImmediate;
+    attachTo.clearImmediate = clearImmediate;
+}(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(19), __webpack_require__(20)))
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1,eval)("this");
+} catch(e) {
+	// This works if the window reference is available
+	if(typeof window === "object")
+		g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
+
+/***/ }),
+/* 20 */
+/***/ (function(module, exports) {
+
+// shim for using process in browser
+var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+
+
+
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
+
+
+/***/ }),
+/* 21 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__globals__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ids__ = __webpack_require__(6);
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+
+
+
+
+/* harmony default export */ __webpack_exports__["a"] = ({
+	build(Component, ...stores) {
+		const allStores = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* default */].get('stores');
+		class SmartComponent extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
+			constructor(props) {
+				super(props);
+				this.state = {};
+				// todo: see if you can use the child component class name as part of the key for
+				// better errors
+				this.key = __WEBPACK_IMPORTED_MODULE_2__ids__["a" /* default */].nextComponentId();
+				for (const store of stores) {
+					allStores[store].connectToState(this.key, this.setState.bind(this));
+					this.state[store] = allStores[store].all();
+				}
+			}
+			componentWillUnmount() {
+				for (const store of stores) {
+					allStores[store].ignore(this.key);
+				}
+			}
+
+			render() {
+				const errors = {};
+				const loading = {};
+				const values = {};
+				for (const store in this.state) {
+					errors[store] = this.state[store].error;
+					loading[store] = this.state[store].loading;
+					values[store] = this.state[store].value;
+				}
+				return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(Component, _extends({
+					errors: errors,
+					loading: loading
+				}, values, this.props));
+			}
+		};
+		return SmartComponent;
+	}
+});
+
+/***/ }),
+/* 22 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__ids__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__globals__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__error__ = __webpack_require__(1);
+
+
+
+
+function isFunction(functionToCheck) {
+	var getType = {};
+	return functionToCheck && getType.toString.call(functionToCheck) === '[object Function]';
+}
+
+const build2 = (actions, dispatcher) => {
+	const _dispatcher = dispatcher || __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* default */].get('defaultDispatcher');
+	const _id = __WEBPACK_IMPORTED_MODULE_0__ids__["a" /* default */].nextStoreId();
+	const _history = [];
+	let _undoHistory = [];
+	let _loading = false;
+	let _key = null;
+
+	class Store {
+		constructor(initialStateValue) {
+			this._componentListeners = {};
+			_history.push({
+				action: null,
+				state: {
+					value: initialStateValue,
+					error: null
+				}
+			});
+
+			this.isStore = true;
+
+			for (const action in actions) {
+				_dispatcher.on(this, action, actions[action].dependencies || []);
+			}
+		}
+
+		listen(componentKey, cb) {
+			if (!this._componentListeners.hasOwnProperty(componentKey)) {
+				this._componentListeners[componentKey] = cb;
+			} else {
+				throw new Error(`component (key=${componentKey}) is already listening to the store ` + `(id=${_id}, key=${_key})`);
+			}
+		}
+
+		connectToState(componentKey, setState) {
+			this.listen(componentKey, (resolve, reject) => {
+				const key = this.key() || this.id();
+				const newState = {};
+				newState[key] = this.all();
+				setState(newState, resolve);
+			});
+			return this.all();
+		}
+
+		ignore(componentKey) {
+			if (this._componentListeners.hasOwnProperty(componentKey)) {
+				delete this._componentListeners[componentKey];
+			}
+		}
+
+		handleAction(action, data = {}) {
+			if (!actions[action]) {
+				return Promise.reject(new __WEBPACK_IMPORTED_MODULE_2__error__["a" /* StoreError */]({
+					message: `Store "${this.key()}" does not have an action "${action}"`
+				}));
+			}
+			let run = null;
+			if (isFunction(actions[action])) {
+				run = actions[action];
+			} else if (actions[action].run && isFunction(actions[action].run)) {
+				run = actions[action].run;
+			}
+			if (!run) {
+				const message = `Store "${this.key()}" does not have a run method for action "${action}"`;
+				return Promise.reject(new __WEBPACK_IMPORTED_MODULE_2__error__["a" /* StoreError */]({ message, recoverable: false }));
+			}
+			const historyAction = { name: action, data };
+			return run.call(this, data).then(result => {
+				if (result !== this.value()) {
+					_history.push({
+						action: historyAction,
+						state: {
+							value: result,
+							error: null
+						}
+					});
+					this.change(action);
+					_undoHistory = [];
+				}
+			}).catch(error => {
+				let recoverable = false;
+				if (error.name === 'StoreError') {
+					recoverable = error.recoverable;
+				} else if (error.message && !(error instanceof Error)) {
+					error = new __WEBPACK_IMPORTED_MODULE_2__error__["a" /* StoreError */](error);
+					recoverable = error.recoverable;
+				}
+
+				const currentState = this.state();
+				_history.push({
+					action: historyAction,
+					state: {
+						value: currentState.value,
+						error: error
+					}
+				});
+				this.change(action);
+				if (!recoverable) {
+					throw error;
+				}
+				_undoHistory = [];
+			});
+		}
+
+		change(action) {
+			const keys = Object.keys(this._componentListeners);
+			return Promise.all(keys.map(key => new Promise((resolve, reject) => this._componentListeners[key].call(this, resolve, reject, { action }))));
+		}
+
+		state() {
+			return _history.length ? _history[_history.length - 1].state : undefined;
+		}
+
+		value() {
+			return this.state() ? this.state().value : undefined;
+		}
+
+		setValue(newValue, newError, action) {
+			action = action || 'setValue';
+			_history.push({
+				action,
+				state: {
+					value: newValue,
+					error: newError
+				}
+			});
+			this.change(action);
+		}
+
+		loading() {
+			return _loading;
+		}
+
+		setLoading(value) {
+			if (_loading !== value) {
+				_loading = value;
+				this.change('setLoading');
+			}
+		}
+
+		error() {
+			return this.state() ? this.state().error : undefined;
+		}
+
+		all() {
+			return {
+				value: this.value(),
+				loading: this.loading(),
+				error: this.error()
+			};
+		}
+
+		setKey(key) {
+			_key = key;
+		}
+
+		key() {
+			return _key;
+		}
+
+		id() {
+			return _id;
+		}
+
+		history() {
+			return _history;
+		}
+
+		undo() {
+			if (_history.length <= 1) return;
+			_undoHistory.push(_history.pop());
+			this.change('undo');
+		}
+
+		redo() {
+			if (_undoHistory.length < 1) return;
+			_history.push(_undoHistory.pop());
+			this.change('redo');
+		}
+	}
+
+	return Store;
+};
+
+const build = build2;
+/* unused harmony export build */
+
+
+/* harmony default export */ __webpack_exports__["a"] = ({
+	build: build2
+});
+
+/***/ })
+/******/ ]);
+});

@@ -65,7 +65,7 @@ const build2 = (actions, dispatcher) => {
 			}
 		}
 
-		handleAction(action, data) {
+		handleAction(action, data={}) {
 			if(!actions[action]) {
 				return Promise.reject(new StoreError({
 					message: `Store "${this.key()}" does not have an action "${action}"`

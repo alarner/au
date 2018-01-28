@@ -1,8 +1,8 @@
 {
   "name": "au-flux",
-  "version": "4.1.0",
+  "version": "4.1.1",
   "description": "A front-end framework designed to be flux-like? without the silly boilerplate.",
-  "main": "bundle.js",
+  "main": "bundle.min.js",
   "scripts": {
     "test": "jest",
     "build": "webpack --config webpack.prod.js"
