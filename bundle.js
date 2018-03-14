@@ -1213,7 +1213,7 @@ const build2 = (actions, dispatcher) => {
 			}
 			const historyAction = { name: action, data };
 			return run.call(this, data).then(result => {
-				if (result !== this.value()) {
+				if (this.error() || result !== this.value()) {
 					_history.push({
 						action: historyAction,
 						state: {
