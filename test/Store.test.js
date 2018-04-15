@@ -1,6 +1,6 @@
-const Dispatcher = require('../src/Dispatcher');
-const Store = require('../src/Store');
-const globals = require('../src/globals');
+import Dispatcher from '../src/Dispatcher';
+import Store from '../src/Store';
+import globals from '../src/globals';
 
 describe('storeBuilder', () => {
 	it('should exist', () => {
@@ -16,10 +16,8 @@ describe('storeBuilder', () => {
 
 describe('Store', () => {
 	const TestStore = Store.build({
-		foo: {
-			run(resolve, reject, action) {
-				resolve(this.value());
-			}
+		async foo() {
+			return this.value();
 		}
 	});
 
@@ -113,16 +111,14 @@ describe('Store', () => {
 			const d1 = new Dispatcher();
 			const setState = jest.fn();
 			const UserStore = Store.build({
-				foo: {
-					run(resolve, reject, data) {
-						resolve({ foo: 'bar' });
-					}
+				async foo() {
+					return { foo: 'bar' };
 				}
 			}, d1);
 			const stores = {
 				user: new UserStore()
 			};
-			globals.default.set('stores', stores);
+			globals.set('stores', stores);
 			const state = stores.user.connectToState('ButtonComponent', setState);
 
 			await d1.trigger('foo');

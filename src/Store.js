@@ -2,11 +2,6 @@ import ids from './ids';
 import globals from './globals';
 import { StoreError } from './error';
 
-function isFunction(functionToCheck) {
-	var getType = {};
-	return functionToCheck && getType.toString.call(functionToCheck) === '[object Function]';
-}
-
 const build2 = (actions, dispatcher) => {
 	const _dispatcher = dispatcher || globals.get('defaultDispatcher');
 	const _id = ids.nextStoreId();
@@ -72,10 +67,10 @@ const build2 = (actions, dispatcher) => {
 				}));
 			}
 			let run = null;
-			if(isFunction(actions[action])) {
+			if(typeof actions[action] === 'function') {
 				run = actions[action];
 			}
-			else if(actions[action].run && isFunction(actions[action].run)) {
+			else if(actions[action].run && typeof actions[action].run === 'function') {
 				run = actions[action].run;
 			}
 			if(!run) {

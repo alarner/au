@@ -1,6 +1,7 @@
-const Dispatcher = require('../src/Dispatcher');
-const Store = require('../src/Store');
-const globals = require('../src/globals');
+import Dispatcher from '../src/Dispatcher';
+import Store from '../src/Store';
+import { StoreError } from '../src/error';
+import globals from '../src/globals';
 
 describe('Dispatcher', () => {
 	it('should exist', () => {
@@ -25,9 +26,8 @@ describe('Dispatcher', () => {
 			const UserStore = Store.build({
 				evt_name: {
 					dependencies: [],
-					run(resolve, reject, action) {
+					async run(action) {
 						call = true;
-						resolve();
 					}
 				}
 			});
@@ -41,9 +41,8 @@ describe('Dispatcher', () => {
 			const UserStore = Store.build({
 				evt_name: {
 					dependencies: [],
-					run(resolve, reject, action) {
+					async run(action) {
 						call = true;
-						resolve();
 					}
 				}
 			});
@@ -56,9 +55,8 @@ describe('Dispatcher', () => {
 			const UserStore = Store.build({
 				evt_name: {
 					dependencies: [],
-					run(resolve, reject, action) {
+					async run(action) {
 						call = true;
-						resolve();
 					}
 				}
 			});
@@ -73,18 +71,16 @@ describe('Dispatcher', () => {
 			const d1 = new Dispatcher();
 			const UserStore = Store.build({
 				evt_name: {
-					run(resolve, reject, data) {
+					async run(data) {
 						callOrder1.push(1);
-						resolve();
 					}
 				}
 			}, d1);
 			const TestStore = Store.build({
 				evt_name: {
 					dependencies: ['user'],
-					run(resolve, reject, data) {
+					async run(data) {
 						callOrder1.push(2);
-						resolve();
 					}
 				}
 			}, d1);
@@ -92,7 +88,7 @@ describe('Dispatcher', () => {
 				user: new UserStore(),
 				test: new TestStore()
 			};
-			globals.default.set('stores', stores);
+			globals.set('stores', stores);
 
 			const callOrder1 = [];
 			await d1.trigger('evt_name');
@@ -103,17 +99,15 @@ describe('Dispatcher', () => {
 			const UserStore = Store.build({
 				evt_name: {
 					dependencies: ['test'],
-					run(resolve, reject, data) {
+					async run(data) {
 						callOrder1.push(1);
-						resolve();
 					}
 				}
 			}, d1);
 			const TestStore = Store.build({
 				evt_name: {
-					run(resolve, reject, data) {
+					async run(data) {
 						callOrder1.push(2);
-						resolve();
 					}
 				}
 			}, d1);
@@ -121,7 +115,7 @@ describe('Dispatcher', () => {
 				user: new UserStore(),
 				test: new TestStore()
 			};
-			globals.default.set('stores', stores);
+			globals.set('stores', stores);
 
 			const callOrder1 = [];
 			await d1.trigger('evt_name');
@@ -133,23 +127,20 @@ describe('Dispatcher', () => {
 			const UserStore = Store.build({
 				evt_name1: {
 					dependencies: ['test'],
-					run(resolve, reject, data) {
+					async run(data) {
 						callOrder1.push(1);
-						resolve();
 					}
 				}
 			}, d1);
 			const TestStore = Store.build({
 				evt_name1: {
-					run(resolve, reject, data) {
+					async run(data) {
 						callOrder1.push(2);
-						resolve();
 					}
 				},
 				evt_name2: {
-					run(resolve, reject, data) {
+					async run(data) {
 						callOrder1.push(3);
-						resolve();
 					}
 				}
 			}, d1);
@@ -157,7 +148,7 @@ describe('Dispatcher', () => {
 				user: new UserStore(),
 				test: new TestStore()
 			};
-			globals.default.set('stores', stores);
+			globals.set('stores', stores);
 
 			await Promise.all([
 				d1.trigger('evt_name1'),
@@ -170,26 +161,27 @@ describe('Dispatcher', () => {
 			const callOrder1 = [];
 			const UserStore = Store.build({
 				evt_name1: {
-					run(resolve, reject, data) {
+					async run(data) {
 						callOrder1.push(1);
-						reject({ message: 'A recoverable error' });
+						throw new StoreError({ message: 'A recoverable error' });
 					}
 				}
 			}, d1);
 			const TestStore = Store.build({
 				evt_name1: {
 					dependencies: ['user'],
-					run(resolve, reject, data) {
-						setTimeout(() => {
-							callOrder1.push(2);
-							resolve();
-						}, 50);
+					async run(data) {
+						await new Promise((resolve, reject) => {
+							setTimeout(() => {
+								callOrder1.push(2);
+								resolve();
+							}, 50);
+						});
 					}
 				},
 				evt_name2: {
-					run(resolve, reject, data) {
+					async run(data) {
 						callOrder1.push(3);
-						resolve();
 					}
 				}
 			}, d1);
@@ -197,7 +189,7 @@ describe('Dispatcher', () => {
 				user: new UserStore(),
 				test: new TestStore()
 			};
-			globals.default.set('stores', stores);
+			globals.set('stores', stores);
 
 			await Promise.all([
 				d1.trigger('evt_name1'),
@@ -210,26 +202,27 @@ describe('Dispatcher', () => {
 			const callOrder1 = [];
 			const UserStore = Store.build({
 				evt_name1: {
-					run(resolve, reject, data) {
+					async run(data) {
 						callOrder1.push(1);
-						reject({ message: 'A recoverable error', recoverable: false });
+						throw new StoreError({ message: 'A recoverable error', recoverable: false });
 					}
 				}
 			}, d1);
 			const TestStore = Store.build({
 				evt_name1: {
 					dependencies: ['user'],
-					run(resolve, reject, data) {
-						setTimeout(() => {
-							callOrder1.push(2);
-							resolve();
-						}, 50);
+					async run(data) {
+						await new Promise((resolve, reject) => {
+							setTimeout(() => {
+								callOrder1.push(2);
+								resolve();
+							}, 50);
+						});
 					}
 				},
 				evt_name2: {
-					run(resolve, reject, data) {
+					async run(data) {
 						callOrder1.push(3);
-						resolve();
 					}
 				}
 			}, d1);
@@ -237,7 +230,7 @@ describe('Dispatcher', () => {
 				user: new UserStore(),
 				test: new TestStore()
 			};
-			globals.default.set('stores', stores);
+			globals.set('stores', stores);
 
 			try {
 				await d1.trigger('evt_name1');
@@ -253,26 +246,26 @@ describe('Dispatcher', () => {
 			const callOrder1 = [];
 			const UserStore = Store.build({
 				evt_name1: {
-					run(resolve, reject, data) {
-						setTimeout(() => {
-							callOrder1.push(1);
-							resolve();
-						}, 500);
+					async run(data) {
+						await new Promise((resolve, reject) => {
+							setTimeout(() => {
+								callOrder1.push(1);
+								resolve();
+							}, 500);
+						});
 					}
 				}
 			}, d1);
 			const TestStore = Store.build({
 				evt_name1: {
 					dependencies: ['user'],
-					run(resolve, reject, data) {
+					async run(data) {
 						callOrder1.push(2);
-						resolve();
 					}
 				},
 				evt_name2: {
-					run(resolve, reject, data) {
+					async run(data) {
 						callOrder1.push(3);
-						resolve();
 					}
 				}
 			}, d1);
@@ -280,7 +273,7 @@ describe('Dispatcher', () => {
 				user: new UserStore(),
 				test: new TestStore()
 			};
-			globals.default.set('stores', stores);
+			globals.set('stores', stores);
 
 			await Promise.all([
 				d1.trigger('evt_name1'),
