@@ -7,7 +7,7 @@
 		exports["au-flux"] = factory(require("react"));
 	else
 		root["au-flux"] = factory(root["React"]);
-})(this, function(__WEBPACK_EXTERNAL_MODULE_5__) {
+})(this, function(__WEBPACK_EXTERNAL_MODULE_4__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -95,40 +95,7 @@ module.exports = function arrayEach(arr, iterator) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-
-
-class StoreError2 extends Error {
-	constructor({ message, key, recoverable }) {
-		super(message);
-		this.key = key || 'default';
-		this.recoverable = recoverable || recoverable === undefined;
-		this.name = 'StoreError';
-	}
-}
-
-const renderError2 = (error, key, ErrorComponent) => {
-	return error && error.key === key ? __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(ErrorComponent, { error: error }) : null;
-};
-
-const StoreError = StoreError2;
-/* harmony export (immutable) */ __webpack_exports__["a"] = StoreError;
-
-const renderError = renderError2;
-/* unused harmony export renderError */
-
-/* harmony default export */ __webpack_exports__["b"] = ({
-	StoreError: StoreError2,
-	renderError: renderError2
-});
-
-/***/ }),
-/* 2 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Dispatcher__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Dispatcher__ = __webpack_require__(2);
 
 class Globals {
 	constructor() {
@@ -163,15 +130,13 @@ class Globals {
 /* harmony default export */ __webpack_exports__["a"] = (new Globals());
 
 /***/ }),
-/* 3 */
+/* 2 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = Dispatcher;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_async_auto__ = __webpack_require__(8);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_async_auto___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_async_auto__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__error__ = __webpack_require__(1);
-
 
 
 function Dispatcher() {
@@ -209,21 +174,21 @@ function Dispatcher() {
 
 	this.handleAction = function (action, data = {}) {
 		return new Promise((resolve, reject) => {
-			if (!storeActionHandlers.hasOwnProperty(action)) {
-				return resolve();
+			if (!storeActionHandlers.hasOwnProperty(action) || !Object.keys(storeActionHandlers[action]).length) {
+				return reject(new Error(`There are no handlers for action "${action}"`));
 			}
 			const autoObj = {};
 			for (const storeId in storeActionHandlers[action]) {
 				const { dependencies, store } = storeActionHandlers[action][storeId];
 				autoObj[store.key()] = dependencies.slice(0);
 				autoObj[store.key()].push(cb => {
-					store.handleAction(action, data).then(() => cb()).catch(error => {
+					store.handleAction(action, data).then(() => cb(null, true)).catch(error => {
 						let recoverable = false;
-						if (error instanceof __WEBPACK_IMPORTED_MODULE_1__error__["a" /* StoreError */]) {
+						if (error.name === 'StoreError') {
 							recoverable = error.recoverable;
 						}
 						if (recoverable) {
-							cb(null, error);
+							cb(null, false);
 						} else {
 							cb(error);
 						}
@@ -235,7 +200,8 @@ function Dispatcher() {
 				if (error) {
 					reject(error);
 				} else {
-					resolve(results);
+					const values = Object.values(results);
+					resolve(values.every(v => v));
 				}
 			});
 		});
@@ -274,10 +240,10 @@ function Dispatcher() {
 			next();
 		});
 	};
-};
+}
 
 /***/ }),
-/* 4 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -295,13 +261,13 @@ module.exports = Object.keys || function keys(obj) {
 
 
 /***/ }),
-/* 5 */
+/* 4 */
 /***/ (function(module, exports) {
 
-module.exports = __WEBPACK_EXTERNAL_MODULE_5__;
+module.exports = __WEBPACK_EXTERNAL_MODULE_4__;
 
 /***/ }),
-/* 6 */
+/* 5 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -322,16 +288,49 @@ class IdGenerator {
 /* harmony default export */ __webpack_exports__["a"] = (new IdGenerator());
 
 /***/ }),
+/* 6 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
+
+
+class StoreError2 extends Error {
+	constructor({ message, key, recoverable }) {
+		super(message);
+		this.key = key || 'default';
+		this.recoverable = recoverable || recoverable === undefined;
+		this.name = 'StoreError';
+	}
+}
+
+const renderError2 = (error, key, ErrorComponent) => {
+	return error && error.key === key ? __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(ErrorComponent, { error: error }) : null;
+};
+
+const StoreError = StoreError2;
+/* harmony export (immutable) */ __webpack_exports__["a"] = StoreError;
+
+const renderError = renderError2;
+/* unused harmony export renderError */
+
+/* harmony default export */ __webpack_exports__["b"] = ({
+	StoreError: StoreError2,
+	renderError: renderError2
+});
+
+/***/ }),
 /* 7 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Dispatcher__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__globals__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Dispatcher__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__globals__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__SmartComponent__ = __webpack_require__(21);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Store__ = __webpack_require__(22);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__error__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__error__ = __webpack_require__(6);
 
 
 
@@ -369,7 +368,7 @@ const StoreError = __WEBPACK_IMPORTED_MODULE_4__error__["b" /* default */].Store
 
 var once = __webpack_require__(9);
 var noop = __webpack_require__(10);
-var _keys = __webpack_require__(4);
+var _keys = __webpack_require__(3);
 var reduce = __webpack_require__(11);
 var indexOf = __webpack_require__(12);
 var isArray = __webpack_require__(13);
@@ -575,7 +574,7 @@ module.exports = function restParam(func, startIndex) {
 "use strict";
 
 
-var keys = __webpack_require__(4);
+var keys = __webpack_require__(3);
 var arrayEach = __webpack_require__(0);
 
 module.exports = function forEachOf(object, iterator) {
@@ -1078,10 +1077,10 @@ process.umask = function() { return 0; };
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__globals__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ids__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__globals__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ids__ = __webpack_require__(5);
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 
@@ -1123,7 +1122,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 					loading: loading
 				}, values, this.props));
 			}
-		};
+		}
 		return SmartComponent;
 	}
 });
@@ -1133,17 +1132,12 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__ids__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__globals__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__error__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__ids__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__globals__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__error__ = __webpack_require__(6);
 
 
 
-
-function isFunction(functionToCheck) {
-	var getType = {};
-	return functionToCheck && getType.toString.call(functionToCheck) === '[object Function]';
-}
 
 const build2 = (actions, dispatcher) => {
 	const _dispatcher = dispatcher || __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* default */].get('defaultDispatcher');
@@ -1180,7 +1174,7 @@ const build2 = (actions, dispatcher) => {
 		}
 
 		connectToState(componentKey, setState) {
-			this.listen(componentKey, (resolve, reject) => {
+			this.listen(componentKey, resolve => {
 				const key = this.key() || this.id();
 				const newState = {};
 				newState[key] = this.all();
@@ -1202,9 +1196,9 @@ const build2 = (actions, dispatcher) => {
 				}));
 			}
 			let run = null;
-			if (isFunction(actions[action])) {
+			if (typeof actions[action] === 'function') {
 				run = actions[action];
-			} else if (actions[action].run && isFunction(actions[action].run)) {
+			} else if (actions[action].run && typeof actions[action].run === 'function') {
 				run = actions[action].run;
 			}
 			if (!run) {
@@ -1233,19 +1227,20 @@ const build2 = (actions, dispatcher) => {
 					recoverable = error.recoverable;
 				}
 
-				const currentState = this.state();
-				_history.push({
-					action: historyAction,
-					state: {
-						value: currentState.value,
-						error: error
-					}
-				});
-				this.change(action);
-				if (!recoverable) {
-					throw error;
+				if (recoverable) {
+					const currentState = this.state();
+					_history.push({
+						action: historyAction,
+						state: {
+							value: currentState.value,
+							error: error
+						}
+					});
+					this.change(action);
+					_undoHistory = [];
 				}
-				_undoHistory = [];
+
+				return Promise.reject(error);
 			});
 		}
 

@@ -1,5 +1,4 @@
 import auto from 'async.auto';
-import { StoreError } from './error';
 
 export default function Dispatcher() {
 	const storeActionHandlers = {};
@@ -37,8 +36,8 @@ export default function Dispatcher() {
 
 	this.handleAction = function(action, data = {}) {
 		return new Promise((resolve, reject) => {
-			if(!storeActionHandlers.hasOwnProperty(action)) {
-				return resolve();
+			if(!storeActionHandlers.hasOwnProperty(action) || !Object.keys(storeActionHandlers[action]).length) {
+				return reject(new Error(`There are no handlers for action "${action}"`));
 			}
 			const autoObj = {};
 			for(const storeId in storeActionHandlers[action]) {
@@ -46,19 +45,19 @@ export default function Dispatcher() {
 				autoObj[store.key()] = dependencies.slice(0);
 				autoObj[store.key()].push((cb) => {
 					store.handleAction(action, data)
-						.then(() => cb())
-						.catch((error) => {
-							let recoverable = false;
-							if(error instanceof StoreError) {
-								recoverable = error.recoverable;
-							}
-							if(recoverable) {
-								cb(null, error);
-							}
-							else {
-								cb(error);
-							}
-						});
+					.then(() => cb(null, true))
+					.catch((error) => {
+						let recoverable = false;
+						if(error.name === 'StoreError') {
+							recoverable = error.recoverable;
+						}
+						if(recoverable) {
+							cb(null, false);
+						}
+						else {
+							cb(error);
+						}
+					});
 				});
 			}
 
@@ -67,7 +66,8 @@ export default function Dispatcher() {
 					reject(error);
 				}
 				else {
-					resolve(results);
+					const values = Object.values(results);
+					resolve(values.every(v => v));
 				}
 			});
 
@@ -109,4 +109,4 @@ export default function Dispatcher() {
 			next();
 		});
 	};
-};
+}

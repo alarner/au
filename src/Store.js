@@ -45,7 +45,7 @@ const build2 = (actions, dispatcher) => {
 		}
 
 		connectToState(componentKey, setState) {
-			this.listen(componentKey, (resolve, reject) => {
+			this.listen(componentKey, (resolve) => {
 				const key = this.key() || this.id();
 				const newState = {};
 				newState[key] = this.all();
@@ -103,19 +103,20 @@ const build2 = (actions, dispatcher) => {
 					recoverable = error.recoverable;
 				}
 
-				const currentState = this.state();
-				_history.push({
-					action: historyAction,
-					state: {
-						value: currentState.value,
-						error: error
-					}
-				});
-				this.change(action);
-				if(!recoverable) {
-					throw error;
+				if(recoverable) {
+					const currentState = this.state();
+					_history.push({
+						action: historyAction,
+						state: {
+							value: currentState.value,
+							error: error
+						}
+					});
+					this.change(action);
+					_undoHistory = [];
 				}
-				_undoHistory = [];
+
+				return Promise.reject(error);
 			});
 		}
 

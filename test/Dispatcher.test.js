@@ -282,4 +282,75 @@ describe('Dispatcher', () => {
 			expect(callOrder1).toEqual([3, 1, 2]);
 		});
 	});
+
+	describe('trigger', () => {
+		it('should exist', () => {
+			const d = new Dispatcher();
+			expect(d.trigger).toBeTruthy();
+		});
+
+		it('should throw an error if there are no handlers to process the action', async () => {
+			const d = new Dispatcher();
+			try {
+				await d.trigger('foo');
+				expect(true).toEqual(false);
+			}
+			catch(error) {
+				expect(error.message).toEqual('There are no handlers for action "foo"');
+			}
+		});
+
+		it('should return true if there is no error thrown', async () => {
+			const d1 = new Dispatcher();
+			const UserStore = Store.build({
+				async foo() {
+					return false;
+				}
+			}, d1);
+			const stores = {
+				user: new UserStore()
+			};
+			globals.set('stores', stores);
+
+			const result = await d1.trigger('foo');
+			expect(result).toEqual(true);
+		});
+
+		it('should return false if a recoverable error is thrown', async () => {
+			const d1 = new Dispatcher();
+			const UserStore = Store.build({
+				async foo() {
+					throw new StoreError({ message: 'hi!' });
+				}
+			}, d1);
+			const stores = {
+				user: new UserStore()
+			};
+			globals.set('stores', stores);
+
+			const result = await d1.trigger('foo');
+			expect(result).toEqual(false);
+		});
+
+		it('should throw an error if a non-recoverable error is thrown', async () => {
+			const d1 = new Dispatcher();
+			const UserStore = Store.build({
+				async foo() {
+					throw new Error('non-recoverable');
+				}
+			}, d1);
+			const stores = {
+				user: new UserStore()
+			};
+			globals.set('stores', stores);
+			
+			try {
+				await d1.trigger('foo');
+				expect(true).toEqual(false);
+			}
+			catch(error) {
+				expect(error.message).toEqual('non-recoverable');
+			}
+		});
+	});
 });
