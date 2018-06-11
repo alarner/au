@@ -10,5 +10,9 @@ module.exports = merge(common, {
 			amd: 'react',
 			root: 'React'
 		}
+	},
+	output: {
+		library: 'au-flux',
+		libraryTarget: 'umd'
 	}
 });

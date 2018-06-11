@@ -1,9 +1,9 @@
 // import React from 'react';
 // import ReactDOM from 'react-dom';
 // import Button from './components/Button';
-import { globals } from 'au-flux';
+import au from 'au-flux';
 // import stores from './stores';
-console.log(globals);
+console.log(au);
 // globals.set('stores', stores);
 
 {/*ReactDOM.render(<Button />, document.getElementById('main'));*/}
