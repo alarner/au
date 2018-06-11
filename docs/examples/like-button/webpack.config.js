@@ -2,27 +2,31 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-	entry: './src/scripts/main.js',
-	plugins: [
-		new HtmlWebpackPlugin({
-			title: 'AU Flux Like Button Example',
-			template: 'src/index.html'
-		})
+	mode: 'development',
+	entry: [
+		'./src/scripts/main.js'
 	],
 	module: {
-		loaders: [
+		rules: [
 			{
-				test: /.jsx?$/,
-				loader: 'babel-loader',
+				test: /\.(js|jsx)$/,
 				exclude: /node_modules/,
-				query: {
-					presets: ['es2015', 'react']
-				}
+				use: ['babel-loader']
 			}
 		]
 	},
+	resolve: {
+		extensions: ['*', '.js', '.jsx']
+	},
 	output: {
-		filename: 'bundle.js',
-		path: path.resolve(__dirname, 'dist')
-	}
+		filename: '[name].bundle.js',
+		path: path.join(__dirname, 'dev'),
+		publicPath: '/'
+	},
+	plugins: [
+		new HtmlWebpackPlugin({
+			title: 'Climbalytics Admin',
+			template: './src/index.html'
+		})
+	]
 };
