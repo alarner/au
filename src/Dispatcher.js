@@ -1,4 +1,5 @@
 import ActionResult from './ActionResult';
+import RecoverableError from './RecoverableError';
 
 export function Dispatcher() {
 	let _stores = [];
@@ -19,22 +20,11 @@ export function Dispatcher() {
 		const stores = _stores.filter(s => s.canHandleAction(name));
 
 		if(!stores.length) {
-			throw new Error(`There are no handlers for action "${action}"`);
+			throw new Error(`There are no handlers for action "${name}"`);
 		}
 
 		// Get the immediately new state for each store
 		const results = stores.map(s => processImmediateAction(s, name, data, s.state()));
-
-		// Apply the new dirty states for each store
-		for(const result of results) {
-			if(!result.error) {
-				result.store.setState(result.state, false, false);
-			}
-			else {
-				result.store.setError(result.error, false);
-			}
-			result.store.triggerStateChange();
-		}
 
 		let returnValue = null;
 
@@ -42,8 +32,24 @@ export function Dispatcher() {
 			returnValue = false
 		}
 
-		if(!results.some(result => result.deferred)) {
+		if(!results.some(result => result.deferred) && _actionQueue.length === 0) {
 			returnValue = true;
+		}
+
+		// Apply the new dirty states for each store
+		for(const result of results) {
+			if(!result.error) {
+				result.store.setState(result.state, false);
+				// There is no deferred piece to the result and no pending deferrec actions, so set
+				// the clean state as well
+				if(returnValue === true) {
+					result.store.setState(result.state, true);
+				}
+			}
+			else {
+				result.store.setError(result.error);
+			}
+			result.store.triggerStateChange();
 		}
 
 		if(returnValue !== null) {
@@ -70,20 +76,20 @@ export function Dispatcher() {
 				resolve,
 				reject
 			});
-			attemptNextActionFromQueue(_stores);
+			attemptNextActionFromQueue();
 		});
 	};
 
-	this.attemptNextActionFromQueue = function() {
+	const attemptNextActionFromQueue = function() {
 		if(!_currentAction) {
 			_currentAction = _actionQueue.shift();
 			if(_currentAction) {
-				this.processActionFromQueue(_currentAction, _stores);
+				processActionFromQueue(_currentAction);
 			}
 		}
 	};
 
-	this.processActionFromQueue = async function({ name, data, results, resolve, reject }) {
+	const processActionFromQueue = async function({ name, data, results, resolve, reject }) {
 		// Determine which stores will handle this action.
 		const stores = _stores.filter(s => s.canHandleAction(name));
 
@@ -94,6 +100,7 @@ export function Dispatcher() {
 		const stateByStoreKey = {};
 		for(const { state, error, store } of cleanResults) {
 			stateByStoreKey[store.key()] = { clean: state, error, dirty: state, store };
+			store.setState(state, true);
 		}
 
 		// Re-apply future actions
@@ -116,17 +123,22 @@ export function Dispatcher() {
 		}
 
 		// Set the clean and dirty state for all stores and trigger updates
-		for(const key of stateByStoreKey) {
+		let hasError = false;
+		for(const key in stateByStoreKey) {
 			const { store, clean, dirty, error } = stateByStoreKey[key];
 			if(!error) {
-				store.setState(clean, true, false);
-				store.setState(dirty, false, false);
+				store.setState(clean, true);
+				store.setState(dirty, false);
 			}
 			else {
-				store.setError(error, false);
+				hasError = true;
+				store.setError(error);
 			}
 			store.triggerStateChange();
 		}
+
+		resolve(!hasError);
+		_currentAction = null;
 
 		attemptNextActionFromQueue(stores);
 	};
@@ -146,7 +158,7 @@ export const processImmediateAction = (store, name, data, state) => {
 		}
 	}
 	catch(error) {
-		if(error instanceof StoreError) {
+		if(error instanceof RecoverableError) {
 			finalError = error;
 		}
 		else {
@@ -166,7 +178,7 @@ export const processDeferredAction = async (oldResult) => {
 		}
 	}
 	catch(error) {
-		if(error instanceof StoreError) {
+		if(error instanceof RecoverableError) {
 			finalError = error;
 		}
 		else {

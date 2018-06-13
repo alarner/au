@@ -10,7 +10,7 @@ export default {
     name: 'au-flux',
     globals: ['React']
   },
-  external: [ 'react' ],
+  external: [ 'react', 'immutable' ],
   plugins: [
     babel({
       babelrc: false,

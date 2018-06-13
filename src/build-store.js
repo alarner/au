@@ -6,7 +6,8 @@ export default (actions, dispatcher = d) => {
 		clean: null,
 		dirty: null
 	};
-	const _components = [];
+	let _components = [];
+	let _errors = {};
 
 	return class Store {
 		constructor(initialStateValue) {
@@ -23,7 +24,7 @@ export default (actions, dispatcher = d) => {
 			return _key;
 		}
 
-		setState(state, clean = false, trigger = true) {
+		setState(state, clean = false) {
 			_state[clean ? 'clean' : 'dirty'] = state;
 			if(clean) {
 				_state.dirty = state;
@@ -31,20 +32,28 @@ export default (actions, dispatcher = d) => {
 
 			const toMerge = {};
 			toMerge[this.key()] = _state.dirty;
-
-			if(trigger) {
-				return this.triggerStateChange();
-			}
-			return [];
 		}
 
 		state(clean = false) {
 			return _state[clean ? 'clean' : 'dirty'];
 		}
 
+		fullState(clean = false) {
+			return {
+				value: this.state(clean),
+				errors: _errors
+			}
+		}
+
+		setError(error) {
+			_errors = error.toJS();
+		}
+
 		triggerStateChange() {
+			const toMerge = {};
+			toMerge[this.key()] = this.fullState();
 			return Promise.all(
-				_components.map(c => new Promise(resolve => c.setState(this.state(), resolve)))
+				_components.map(c => new Promise(resolve => c.setState(toMerge, resolve)))
 			);
 		}
 
@@ -73,6 +82,10 @@ export default (actions, dispatcher = d) => {
 					`(key=${this.key()})`
 				);
 			}
+		}
+
+		ignore(componentKey) {
+			_components = _components.filter(c => c.key !== componentKey);
 		}
 	}
 };
