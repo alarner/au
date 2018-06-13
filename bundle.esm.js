@@ -1,6 +1,16 @@
-import ActionResult from './ActionResult';
+class ActionResult {
+	constructor(immediate, deferred) {
+		if(deferred && !(deferred instanceof Function)) {
+			throw new Error(
+				'Second argument to ActionResult constructor must be a function if supplied.'
+			);
+		}
+		this.immediate = immediate;
+		this.deferred = deferred;
+	}
+}
 
-export function Dispatcher() {
+function Dispatcher() {
 	let _stores = [];
 	const _actionQueue = [];
 	let _currentAction = null;
@@ -39,7 +49,7 @@ export function Dispatcher() {
 		let returnValue = null;
 
 		if(results.some(result => result.error)) {
-			returnValue = false
+			returnValue = false;
 		}
 
 		if(!results.some(result => result.deferred)) {
@@ -130,9 +140,8 @@ export function Dispatcher() {
 
 		attemptNextActionFromQueue(stores);
 	};
-};
-
-export const processImmediateAction = (store, name, data, state) => {
+}
+const processImmediateAction = (store, name, data, state) => {
 	let finalError = null;
 	let deferred = null;
 	try {
@@ -156,7 +165,7 @@ export const processImmediateAction = (store, name, data, state) => {
 	return { state, error: finalError, deferred, store };
 };
 
-export const processDeferredAction = async (oldResult) => {
+const processDeferredAction = async (oldResult) => {
 	let { state } = oldResult;
 	let finalError = null;
 	
@@ -175,3 +184,93 @@ export const processDeferredAction = async (oldResult) => {
 	}
 	return { state, error: finalError, store: oldResult.store };
 };
+
+var d = new Dispatcher();
+
+var buildStore = (actions, dispatcher = d) => {
+	let _key = null;
+	const _state = {
+		clean: null,
+		dirty: null
+	};
+	const _components = [];
+
+	return class Store {
+		constructor(initialStateValue) {
+			this.isStore = true;
+			_state.clean = initialStateValue;
+			_state.dirty = initialStateValue;
+		}
+
+		setKey(key) {
+			_key = key;
+		}
+
+		key() {
+			return _key;
+		}
+
+		setState(state, clean = false, trigger = true) {
+			_state[clean ? 'clean' : 'dirty'] = state;
+			if(clean) {
+				_state.dirty = state;
+			}
+
+			const toMerge = {};
+			toMerge[this.key()] = _state.dirty;
+
+			if(trigger) {
+				return this.triggerStateChange();
+			}
+			return [];
+		}
+
+		state(clean = false) {
+			return _state[clean ? 'clean' : 'dirty'];
+		}
+
+		triggerStateChange() {
+			return Promise.all(
+				_components.map(c => new Promise(resolve => c.setState(toMerge, resolve)))
+			);
+		}
+
+		dispatcher() {
+			return dispatcher;
+		}
+
+		canHandleAction(name) {
+			return actions.hasOwnProperty(name);
+		}
+
+		handleAction(name, data, state) {
+			return actions[name].call(this, state, data);
+		}
+
+		connectToState(componentKey, setStateFn) {
+			if(!_components.some(c => c.key === componentKey)) {
+				_components.push({
+					key: componentKey,
+					setState: setStateFn
+				});
+			}
+			else {
+				throw new Error(
+					`component (key=${componentKey}) is already listening to the store ` +
+					`(key=${this.key()})`
+				);
+			}
+		}
+	}
+};
+
+const init = (stores) => {
+	for(const key in stores) {
+		const store = stores[key];
+		store.setKey(key);
+		store.dispatcher().subscribe(store);
+	}
+};
+
+export { ActionResult, buildStore, d, Dispatcher, init };
+//# sourceMappingURL=bundle.esm.js.map

@@ -1,13 +1,20 @@
-import Dispatcher2 from './Dispatcher';
-import globals2 from './globals';
-import SmartComponent2 from './SmartComponent';
-import Store2 from './Store';
-import error from './error';
+import ActionResult from './ActionResult';
+import buildStore from './build-store';
+import d from './default-dispatcher';
+import { Dispatcher } from './Dispatcher';
 
-export const d = globals2.get('defaultDispatcher');
-export const Dispatcher = Dispatcher2;
-export const globals = globals2;
-export const renderError = error.renderError;
-export const SmartComponent = SmartComponent2;
-export const Store = Store2;
-export const StoreError = error.StoreError;
+const init = (stores) => {
+	for(const key in stores) {
+		const store = stores[key];
+		store.setKey(key);
+		store.dispatcher().subscribe(store);
+	}
+};
+
+export {
+	ActionResult,
+	buildStore,
+	d,
+	Dispatcher,
+	init
+};

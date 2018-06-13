@@ -1,48 +1,32 @@
 {
-  "name": "au-flux",
-  "version": "6.0.2",
-  "description": "A front-end framework designed to be flux-like? without the silly boilerplate.",
-  "main": "bundle.js",
+  "name": "test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
   "scripts": {
-    "test": "jest",
-    "build": "webpack --config webpack.prod.js"
+    "test": "jest tests",
+    "build": "npm run build-umd && npm run build-esm",
+    "build-umd": "rollup src/index.js --format umd --name \"au-flux\" --file bundle.umd.js --config rollup.config.js --sourcemap",
+    "build-esm": "rollup src/index.js --format es --name \"au-flux\" --file bundle.esm.js --config rollup.config.esm.js --sourcemap"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/alarner/au.git"
-  },
-  "author": "Aaron Larner",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/alarner/au/issues"
-  },
-  "homepage": "https://github.com/alarner/au#readme",
-  "dependencies": {
-    "async.auto": "^0.5.2"
-  },
-  "babel": {
-    "presets": [
-      "env",
-      "react",
-      "stage-2"
-    ]
-  },
+  "author": "",
+  "license": "ISC",
   "devDependencies": {
     "babel-core": "^6.26.3",
-    "babel-loader": "^7.1.4",
     "babel-preset-env": "^1.7.0",
+    "babel-preset-es2015-rollup": "^3.0.0",
+    "babel-preset-latest": "^6.24.1",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
-    "eslint": "^4.19.1",
-    "eslint-plugin-react": "^7.9.1",
     "jest": "^23.1.0",
-    "react": "^16.4.0",
-    "webpack": "^4.10.2",
-    "webpack-cli": "^2.1.4",
-    "webpack-dev-server": "^3.1.4",
-    "webpack-merge": "^4.1.2"
+    "rollup": "^0.60.2",
+    "rollup-plugin-babel": "^3.0.4",
+    "rollup-plugin-commonjs": "^9.1.3",
+    "rollup-plugin-node-resolve": "^3.3.0",
+    "rollup-plugin-uglify": "^4.0.0"
   },
   "peerDependencies": {
-    "react": "16.x"
+    "react": "16.x",
+    "immutable": "3.x"
   }
 }
