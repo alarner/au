@@ -44,7 +44,7 @@ export default (actions, dispatcher = d) => {
 
 		triggerStateChange() {
 			return Promise.all(
-				_components.map(c => new Promise(resolve => c.setState(toMerge, resolve)))
+				_components.map(c => new Promise(resolve => c.setState(this.state(), resolve)))
 			);
 		}
 

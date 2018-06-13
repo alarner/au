@@ -7,7 +7,7 @@ export function Dispatcher() {
 
 	this.subscribe = function(store) {
 		if(!store || !store.isStore) {
-			throw new Error('')
+			throw new Error('Dispatcher.subscribe requires a store.')
 		}
 		_stores.push(store);
 	};

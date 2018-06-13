@@ -17,7 +17,7 @@ function Dispatcher() {
 
 	this.subscribe = function(store) {
 		if(!store || !store.isStore) {
-			throw new Error('')
+			throw new Error('Dispatcher.subscribe requires a store.')
 		}
 		_stores.push(store);
 	};
@@ -231,7 +231,7 @@ var buildStore = (actions, dispatcher = d) => {
 
 		triggerStateChange() {
 			return Promise.all(
-				_components.map(c => new Promise(resolve => c.setState(toMerge, resolve)))
+				_components.map(c => new Promise(resolve => c.setState(this.state(), resolve)))
 			);
 		}
 
