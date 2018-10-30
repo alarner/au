@@ -414,6 +414,9 @@ const build2 = (actions, dispatcher) => {
 			const keys = Object.keys(this._componentListeners);
 			return Promise.all(keys.filter(key => this._componentListeners[key]).map(key => {
 				console.log('test', key, this._componentListeners[key]);
+				if (!this._componentListeners[key]) {
+					return Promise.resolve(true);
+				}
 				return new Promise((resolve, reject) => this._componentListeners[key].call(this, resolve, reject, { action }));
 			}));
 		}
