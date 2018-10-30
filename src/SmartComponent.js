@@ -5,6 +5,7 @@ import ids from './ids';
 export default {
 	build(Component, ...stores) {
 		const allStores = globals.get('stores');
+		const d = globals.get('defaultDispatcher');
 		class SmartComponent extends React.Component {
 			constructor(props) {
 				super(props);
@@ -34,8 +35,7 @@ export default {
 				}
 				return (
 					<Component
-						errors={errors}
-						loading={loading}
+						d={d}
 						{...values}
 						{...this.props}
 					/>

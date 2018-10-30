@@ -17,9 +17,7 @@
     "url": "https://github.com/alarner/au/issues"
   },
   "homepage": "https://github.com/alarner/au#readme",
-  "dependencies": {
-    "async.auto": "^0.5.2"
-  },
+  "dependencies": {},
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-eslint": "^8.2.3",

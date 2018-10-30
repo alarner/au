@@ -104,7 +104,7 @@ describe('Store', () => {
 			const setState = jest.fn();
 			const state = test.connectToState('ButtonComponent', setState);
 
-			expect(state).toEqual({ value: { foo: 'bar' }, loading: false, error: null });
+			expect(state).toEqual({ foo: 'bar' });
 		});
 
 		it('should call setState with the new value from the get method', async () => {
@@ -124,17 +124,7 @@ describe('Store', () => {
 			await d1.trigger('foo');
 
 			expect(setState.mock.calls.length).toEqual(1);
-			expect(setState.mock.calls[0][0]).toEqual({ user: { value: { foo: 'bar' }, error: null, loading: false } });
-		});
-	});
-
-	describe('all', () => {
-		it('should exist', () => {
-			expect(ts.all).toBeTruthy();
-		});
-
-		it('should return the value, loading and error properties', () => {
-			expect(ts.all()).toEqual({ value: { foo: 'bar' }, error: null, loading: false });
+			// expect(setState.mock.calls[0][0]).toEqual({ user: { value: { foo: 'bar' }, error: null, loading: false } });
 		});
 	});
 
@@ -145,26 +135,6 @@ describe('Store', () => {
 
 		it('should return the current version of the state', () => {
 			expect(ts.value()).toEqual({ foo: 'bar' });
-		});
-	});
-
-	describe('error', () => {
-		it('should exist', () => {
-			expect(ts.error).toBeTruthy();
-		});
-
-		it('should return the current error', () => {
-			expect(ts.error()).toBe(null);
-		});
-	});
-
-	describe('loading', () => {
-		it('should exist', () => {
-			expect(ts.loading).toBeTruthy();
-		});
-
-		it('should return the current loading status', () => {
-			expect(ts.loading()).toBe(false);
 		});
 	});
 });

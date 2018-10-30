@@ -15,20 +15,13 @@ const build2 = (actions, dispatcher) => {
 			this._componentListeners = {};
 			_history.push({
 				action: null,
-				state: {
-					value: initialStateValue,
-					error: null
-				}
+				state: initialStateValue
 			});
 
 			this.isStore = true;
 
 			for(const action in actions) {
-				_dispatcher.on(
-					this,
-					action,
-					actions[action].dependencies || []
-				);
+				_dispatcher.on(this, action);
 			}
 		}
 
@@ -48,10 +41,10 @@ const build2 = (actions, dispatcher) => {
 			this.listen(componentKey, (resolve) => {
 				const key = this.key() || this.id();
 				const newState = {};
-				newState[key] = this.all();
+				newState[key] = this.value();
 				setState(newState, resolve);
 			});
-			return this.all();
+			return this.value();
 		}
 
 		ignore(componentKey) {
@@ -81,42 +74,14 @@ const build2 = (actions, dispatcher) => {
 			}
 			const historyAction = { name: action, data };
 			return run.call(this, data).then((result) => {
-				if(this.error() || result !== this.value()) {
+				if(result !== this.value()) {
 					_history.push({
 						action: historyAction,
-						state: {
-							value: result,
-							error: null
-						}
+						state: result
 					});
 					this.change(action);
 					_undoHistory = [];
 				}
-			})
-			.catch((error) => {
-				let recoverable = false;
-				if(error.name === 'StoreError') {
-					recoverable = error.recoverable;
-				}
-				else if(error.message && !(error instanceof Error)) {
-					error = new StoreError(error);
-					recoverable = error.recoverable;
-				}
-
-				if(recoverable) {
-					const currentState = this.state();
-					_history.push({
-						action: historyAction,
-						state: {
-							value: currentState.value,
-							error: error
-						}
-					});
-					this.change(action);
-					_undoHistory = [];
-				}
-
-				return Promise.reject(error);
 			});
 		}
 
@@ -141,42 +106,16 @@ const build2 = (actions, dispatcher) => {
 		}
 
 		value() {
-			return this.state() ? this.state().value : undefined;
+			return this.state();
 		}
 
-		setValue(newValue, newError, action) {
+		setValue(state, action) {
 			action = action || 'setValue';
 			_history.push({
 				action,
-				state: {
-					value: newValue,
-					error: newError
-				}
+				state
 			});
 			this.change(action);
-		}
-
-		loading() {
-			return _loading;
-		}
-
-		setLoading(value) {
-			if(_loading !== value) {
-				_loading = value;
-				this.change('setLoading');
-			}
-		}
-
-		error() {
-			return this.state() ? this.state().error : undefined;
-		}
-
-		all() {
-			return {
-				value: this.value(),
-				loading: this.loading(),
-				error: this.error()
-			};
 		}
 
 		setKey(key) {
