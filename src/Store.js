@@ -48,6 +48,7 @@ const build2 = (actions, dispatcher) => {
 		}
 
 		ignore(componentKey) {
+			console.log('ignore', componentKey);
 			if(this._componentListeners.hasOwnProperty(componentKey)) {
 				delete this._componentListeners[componentKey];
 			}
@@ -87,7 +88,7 @@ const build2 = (actions, dispatcher) => {
 
 		change(action) {
 			const keys = Object.keys(this._componentListeners);
-			console.log('change', this._componentListeners);
+			console.log('change', keys, this._componentListeners);
 			return Promise.all(
 				keys.map(
 					(key) => {
