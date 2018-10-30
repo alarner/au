@@ -87,6 +87,7 @@ const build2 = (actions, dispatcher) => {
 
 		change(action) {
 			const keys = Object.keys(this._componentListeners);
+			console.log('change', this._componentListeners);
 			return Promise.all(
 				keys.map(
 					(key) => new Promise(
