@@ -296,10 +296,14 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 		class SmartComponent extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
 			constructor(props) {
 				super(props);
-				this.state = {};
+				this.state = {
+					error: '',
+					loading: false
+				};
 				// todo: see if you can use the child component class name as part of the key for
 				// better errors
 				this.key = __WEBPACK_IMPORTED_MODULE_2__ids__["a" /* default */].nextComponentId();
+				this.trigger = this.trigger.bind(this);
 				for (const store of stores) {
 					allStores[store].connectToState(this.key, this.setState.bind(this));
 					this.state[store] = allStores[store].value();
@@ -313,8 +317,24 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 			render() {
 				return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(Component, _extends({
-					d: d
+					trigger: this.trigger
 				}, this.state, this.props));
+			}
+
+			async trigger(action, data) {
+				const newState = {};
+				let success = true;
+				this.setState({ loading: true, error: false });
+				try {
+					await d.trigger(action, data);
+				} catch (error) {
+					success = false;
+					newState.error = error.message;
+				} finally {
+					newState.loading = false;
+				}
+				this.setState(newState);
+				return success;
 			}
 		}
 		return SmartComponent;
