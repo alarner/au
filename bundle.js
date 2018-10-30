@@ -302,7 +302,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 				this.key = __WEBPACK_IMPORTED_MODULE_2__ids__["a" /* default */].nextComponentId();
 				for (const store of stores) {
 					allStores[store].connectToState(this.key, this.setState.bind(this));
-					this.state[store] = allStores[store].all();
+					this.state[store] = allStores[store].value();
 				}
 			}
 			componentWillUnmount() {
@@ -312,17 +312,9 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 			}
 
 			render() {
-				const errors = {};
-				const loading = {};
-				const values = {};
-				for (const store in this.state) {
-					errors[store] = this.state[store].error;
-					loading[store] = this.state[store].loading;
-					values[store] = this.state[store].value;
-				}
 				return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(Component, _extends({
 					d: d
-				}, values, this.props));
+				}, this.state, this.props));
 			}
 		}
 		return SmartComponent;

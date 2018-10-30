@@ -15,7 +15,7 @@ export default {
 				this.key = ids.nextComponentId();
 				for(const store of stores) {
 					allStores[store].connectToState(this.key, this.setState.bind(this));
-					this.state[store] = allStores[store].all();
+					this.state[store] = allStores[store].value();
 				}
 			}
 			componentWillUnmount() {
@@ -25,18 +25,10 @@ export default {
 			}
 
 			render() {
-				const errors = {};
-				const loading = {};
-				const values = {};
-				for(const store in this.state) {
-					errors[store] = this.state[store].error;
-					loading[store] = this.state[store].loading;
-					values[store] = this.state[store].value;
-				}
 				return (
 					<Component
 						d={d}
-						{...values}
+						{...this.state}
 						{...this.props}
 					/>
 				);
